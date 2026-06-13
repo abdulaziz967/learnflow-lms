@@ -3,217 +3,222 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>LearnFlow Pro — Advanced Learning Management System</title>
+<title>LearnFlow Pro — Complete Learning Management System</title>
 <!-- Firebase SDKs -->
 <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 <style>
 :root {
-  --brand: #4f46e5;
-  --brand-light: #eef2ff;
-  --brand-mid: #818cf8;
-  --surface: #ffffff;
-  --surface-alt: #f8fafc;
-  --surface-hover: #f1f5f9;
-  --border: #e2e8f0;
-  --border-strong: #cbd5e1;
-  --text: #0f172a;
-  --text-2: #475569;
-  --text-3: #94a3b8;
-  --success: #16a34a;
-  --success-bg: #f0fdf4;
-  --warn: #d97706;
-  --warn-bg: #fffbeb;
-  --danger: #dc2626;
-  --danger-bg: #fef2f2;
-  --info: #0284c7;
-  --info-bg: #f0f9ff;
-  --radius: 10px;
+  --primary: #4f46e5;
+  --primary-dark: #4338ca;
+  --primary-light: #eef2ff;
+  --success: #10b981;
+  --danger: #ef4444;
+  --warning: #f59e0b;
+  --info: #3b82f6;
+  --dark: #1f2937;
+  --gray: #6b7280;
+  --gray-light: #9ca3af;
+  --light: #f9fafb;
+  --border: #e5e7eb;
+  --white: #ffffff;
+  --shadow: 0 1px 3px rgba(0,0,0,0.1);
+  --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.1);
+  --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.1);
+  --radius: 12px;
   --radius-lg: 16px;
-  --shadow: 0 1px 3px rgba(0,0,0,.08), 0 1px 2px rgba(0,0,0,.04);
-  --shadow-md: 0 4px 12px rgba(0,0,0,.10);
 }
-* { margin:0; padding:0; box-sizing:border-box; }
-body { font-family: 'Inter', system-ui, -apple-system, sans-serif; background:#f1f5f9; color:var(--text); min-height:100vh; font-size:15px; line-height:1.6; }
-a { color:var(--brand); text-decoration:none; }
-button { cursor:pointer; font-family:inherit; font-size:15px; }
-input, textarea, select { font-family:inherit; font-size:15px; }
-h1,h2,h3,h4 { font-weight:600; line-height:1.3; }
 
-/* Layout */
-.app-shell { display:flex; min-height:100vh; }
-.sidebar { width:280px; background:var(--surface); border-right:1px solid var(--border); display:flex; flex-direction:column; position:fixed; top:0; left:0; bottom:0; z-index:100; transition:transform .25s; overflow-y:auto; }
-.sidebar-logo { padding:20px 20px 16px; border-bottom:1px solid var(--border); }
-.sidebar-logo .wordmark { font-size:20px; font-weight:800; color:var(--brand); letter-spacing:-.3px; }
-.sidebar-logo .tagline { font-size:11px; color:var(--text-3); margin-top:2px; }
-.sidebar-nav { flex:1; padding:12px 10px; }
-.nav-section-label { font-size:10px; font-weight:600; color:var(--text-3); letter-spacing:.8px; text-transform:uppercase; padding:12px 10px 6px; }
-.nav-item { display:flex; align-items:center; gap:10px; padding:10px 12px; border-radius:var(--radius); color:var(--text-2); font-size:14px; font-weight:500; cursor:pointer; transition:all .15s; margin-bottom:2px; border:none; background:none; width:100%; text-align:left; }
-.nav-item:hover { background:var(--surface-alt); color:var(--text); }
-.nav-item.active { background:var(--brand-light); color:var(--brand); }
-.nav-item .nav-icon { font-size:18px; width:22px; flex-shrink:0; }
-.nav-badge { margin-left:auto; background:var(--brand); color:white; font-size:10px; font-weight:700; padding:1px 6px; border-radius:20px; min-width:18px; text-align:center; }
-.sidebar-footer { padding:12px; border-top:1px solid var(--border); }
-.user-pill { display:flex; align-items:center; gap:10px; padding:8px 10px; border-radius:var(--radius); background:var(--surface-alt); }
-.avatar { width:36px; height:36px; border-radius:50%; background:var(--brand); color:white; display:flex; align-items:center; justify-content:center; font-size:14px; font-weight:600; flex-shrink:0; }
-.user-pill .uname { font-size:14px; font-weight:600; line-height:1.2; }
-.user-pill .urole { font-size:11px; color:var(--text-3); }
-.logout-btn { font-size:12px; color:var(--text-3); background:none; border:none; cursor:pointer; padding:0; display:block; margin-top:4px; text-align:left; }
-.logout-btn:hover { color:var(--danger); }
+* { margin: 0; padding: 0; box-sizing: border-box; }
 
-.main { margin-left:280px; flex:1; min-height:100vh; }
-.topbar { background:var(--surface); border-bottom:1px solid var(--border); padding:0 28px; height:60px; display:flex; align-items:center; justify-content:space-between; position:sticky; top:0; z-index:50; }
-.topbar-title { font-size:18px; font-weight:600; }
-.topbar-actions { display:flex; align-items:center; gap:12px; }
-.content-area { padding:28px; max-width:1400px; margin:0 auto; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  background: var(--light);
+  color: var(--dark);
+  line-height: 1.5;
+}
 
-/* Buttons */
-.btn { display:inline-flex; align-items:center; gap:7px; padding:9px 18px; border-radius:var(--radius); font-weight:500; font-size:14px; border:1px solid transparent; transition:all .15s; cursor:pointer; }
-.btn-primary { background:var(--brand); color:white; border-color:var(--brand); }
-.btn-primary:hover { background:#4338ca; transform:translateY(-1px); }
-.btn-secondary { background:var(--surface); color:var(--text); border-color:var(--border); }
-.btn-secondary:hover { background:var(--surface-alt); }
-.btn-danger { background:var(--danger); color:white; }
-.btn-danger:hover { background:#b91c1c; }
-.btn-success { background:var(--success); color:white; }
-.btn-success:hover { background:#15803d; }
-.btn-sm { padding:5px 12px; font-size:13px; }
-.btn:disabled { opacity:.5; cursor:not-allowed; }
+/* App Layout */
+.app { display: flex; min-height: 100vh; }
+.sidebar { width: 280px; background: var(--white); border-right: 1px solid var(--border); position: fixed; height: 100vh; overflow-y: auto; z-index: 100; }
+.main { flex: 1; margin-left: 280px; }
+.content { padding: 30px; max-width: 1400px; margin: 0 auto; }
+
+/* Sidebar Styles */
+.sidebar-header { padding: 24px 20px; border-bottom: 1px solid var(--border); }
+.sidebar-header h2 { color: var(--primary); font-size: 22px; }
+.sidebar-nav { padding: 20px; }
+.nav-item { display: flex; align-items: center; gap: 12px; padding: 12px 16px; margin-bottom: 8px; border-radius: var(--radius); color: var(--gray); cursor: pointer; transition: all 0.2s; }
+.nav-item:hover { background: var(--primary-light); color: var(--primary); }
+.nav-item.active { background: var(--primary-light); color: var(--primary); font-weight: 600; }
+.nav-icon { font-size: 20px; width: 24px; }
+.user-section { padding: 20px; border-top: 1px solid var(--border); margin-top: auto; }
+.user-avatar { width: 40px; height: 40px; background: var(--primary); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 18px; }
+.user-info { flex: 1; }
+.user-name { font-weight: 600; }
+.user-role { font-size: 12px; color: var(--gray); }
+
+/* Top Bar */
+.top-bar { background: var(--white); border-bottom: 1px solid var(--border); padding: 16px 30px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 50; }
+.page-title { font-size: 24px; font-weight: 700; }
+.points-badge { background: var(--primary-light); color: var(--primary); padding: 6px 12px; border-radius: 20px; font-weight: 600; display: flex; align-items: center; gap: 6px; }
 
 /* Cards */
-.card { background:var(--surface); border:1px solid var(--border); border-radius:var(--radius-lg); padding:24px; margin-bottom:20px; }
-.card-sm { padding:16px; }
-.section-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:20px; flex-wrap:wrap; gap:10px; }
-.section-title { font-size:18px; font-weight:600; }
+.card { background: var(--white); border-radius: var(--radius-lg); padding: 24px; margin-bottom: 24px; box-shadow: var(--shadow); border: 1px solid var(--border); }
+.card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 12px; }
+.card-title { font-size: 18px; font-weight: 700; display: flex; align-items: center; gap: 8px; }
 
-/* Stats */
-.stats-row { display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:16px; margin-bottom:28px; }
-.stat-card { background:var(--surface); border:1px solid var(--border); border-radius:var(--radius-lg); padding:20px; transition:all .2s; }
-.stat-card:hover { transform:translateY(-2px); box-shadow:var(--shadow-md); }
-.stat-num { font-size:32px; font-weight:800; line-height:1; margin-bottom:6px; }
-.stat-label { font-size:13px; color:var(--text-2); }
-.stat-trend { font-size:12px; margin-top:8px; color:var(--success); }
+/* Stats Grid */
+.stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 20px; margin-bottom: 30px; }
+.stat-card { background: var(--white); border-radius: var(--radius); padding: 20px; border: 1px solid var(--border); transition: transform 0.2s; }
+.stat-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); }
+.stat-number { font-size: 32px; font-weight: 800; color: var(--primary); }
+.stat-label { color: var(--gray); font-size: 14px; margin-top: 5px; }
 
-/* Badges */
-.badge { display:inline-flex; align-items:center; gap:4px; padding:3px 10px; border-radius:20px; font-size:12px; font-weight:600; }
-.badge-success { background:var(--success-bg); color:var(--success); }
-.badge-warn { background:var(--warn-bg); color:var(--warn); }
-.badge-danger { background:var(--danger-bg); color:var(--danger); }
-.badge-info { background:var(--info-bg); color:var(--info); }
-.badge-brand { background:var(--brand-light); color:var(--brand); }
-.badge-gray { background:#f1f5f9; color:var(--text-2); }
+/* Course Grid */
+.courses-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 24px; }
+.course-card { background: var(--white); border-radius: var(--radius-lg); overflow: hidden; border: 1px solid var(--border); cursor: pointer; transition: all 0.3s; }
+.course-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-lg); border-color: var(--primary-light); }
+.course-thumb { height: 160px; display: flex; align-items: center; justify-content: center; font-size: 64px; position: relative; }
+.course-badge { position: absolute; top: 12px; right: 12px; background: var(--primary); color: white; padding: 4px 10px; border-radius: 20px; font-size: 12px; font-weight: 600; }
+.course-body { padding: 20px; }
+.course-title { font-size: 18px; font-weight: 700; margin-bottom: 8px; }
+.course-meta { display: flex; gap: 12px; color: var(--gray); font-size: 13px; margin-bottom: 12px; flex-wrap: wrap; }
+.course-progress { height: 6px; background: var(--border); border-radius: 3px; overflow: hidden; margin: 12px 0; }
+.course-progress-bar { height: 100%; background: var(--primary); border-radius: 3px; transition: width 0.3s; }
+.course-footer { padding: 12px 20px; border-top: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; background: var(--light); }
 
-/* Course Cards */
-.courses-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(320px,1fr)); gap:24px; }
-.course-card { background:var(--surface); border:1px solid var(--border); border-radius:var(--radius-lg); overflow:hidden; cursor:pointer; transition:all .25s; }
-.course-card:hover { box-shadow:var(--shadow-md); transform:translateY(-4px); border-color:var(--brand-mid); }
-.course-thumb { height:160px; display:flex; align-items:center; justify-content:center; font-size:48px; position:relative; background-size:cover; }
-.course-body { padding:20px; }
-.course-title { font-size:18px; font-weight:700; margin-bottom:8px; }
-.course-meta { font-size:13px; color:var(--text-2); display:flex; gap:12px; flex-wrap:wrap; margin-bottom:12px; }
-.course-progress { height:6px; background:#e2e8f0; border-radius:6px; overflow:hidden; margin:12px 0; }
-.course-progress-bar { height:100%; background:var(--brand); border-radius:6px; transition:width .4s; }
-.course-footer { padding:12px 20px; border-top:1px solid var(--border); display:flex; align-items:center; justify-content:space-between; background:var(--surface-alt); }
+/* Course Tabs */
+.course-tabs { display: flex; gap: 4px; background: var(--light); padding: 4px; border-radius: var(--radius); margin-bottom: 24px; width: fit-content; }
+.course-tab { padding: 10px 24px; border: none; background: none; border-radius: 8px; cursor: pointer; font-weight: 500; transition: all 0.2s; }
+.course-tab.active { background: var(--white); box-shadow: var(--shadow); color: var(--primary); }
 
-/* Modal */
-.modal-overlay { position:fixed; inset:0; background:rgba(0,0,0,.5); z-index:1000; display:none; align-items:center; justify-content:center; }
-.modal-overlay.active { display:flex; }
-.modal { background:white; border-radius:var(--radius-lg); padding:28px; max-width:650px; width:90%; max-height:85vh; overflow-y:auto; }
-.modal-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:20px; padding-bottom:12px; border-bottom:1px solid var(--border); }
-.modal-title { font-size:20px; font-weight:700; }
-.modal-close { background:none; border:none; font-size:28px; cursor:pointer; color:var(--text-3); line-height:1; }
+/* Module & Lesson Styles */
+.module-item { border: 1px solid var(--border); border-radius: var(--radius); margin-bottom: 16px; overflow: hidden; }
+.module-header { background: var(--light); padding: 16px 20px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; transition: background 0.2s; }
+.module-header:hover { background: var(--primary-light); }
+.module-title { font-weight: 600; font-size: 16px; }
+.module-lessons { display: none; }
+.module-lessons.open { display: block; }
+.lesson-item { padding: 14px 20px 14px 48px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 12px; cursor: pointer; transition: background 0.2s; }
+.lesson-item:hover { background: var(--primary-light); }
+.lesson-item.completed { background: #d1fae5; }
+.lesson-icon { font-size: 18px; width: 28px; }
+.lesson-title { flex: 1; font-weight: 500; }
+.lesson-duration { font-size: 12px; color: var(--gray); }
+.lesson-type { padding: 2px 8px; border-radius: 12px; font-size: 11px; font-weight: 600; }
+.lesson-type.video { background: #dbeafe; color: #1e40af; }
+.lesson-type.quiz { background: #fed7aa; color: #92400e; }
+.lesson-type.assignment { background: #d1fae5; color: #065f46; }
+.lesson-type.pdf { background: #e0e7ff; color: #3730a3; }
+
+/* Lesson Content View */
+.lesson-view { max-width: 900px; margin: 0 auto; }
+.video-container { position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; border-radius: var(--radius-lg); margin-bottom: 24px; }
+.video-container iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }
+.markdown-content { line-height: 1.8; }
+.markdown-content h1, .markdown-content h2, .markdown-content h3 { margin-top: 24px; margin-bottom: 12px; }
+.markdown-content p { margin-bottom: 16px; }
+.markdown-content ul, .markdown-content ol { margin-left: 24px; margin-bottom: 16px; }
+.markdown-content code { background: var(--light); padding: 2px 6px; border-radius: 4px; font-family: monospace; }
+
+/* Quiz Styles */
+.quiz-question { margin-bottom: 30px; padding: 20px; background: var(--light); border-radius: var(--radius); }
+.quiz-question-text { font-size: 18px; font-weight: 600; margin-bottom: 16px; }
+.quiz-option { padding: 12px 16px; margin-bottom: 10px; background: var(--white); border: 2px solid var(--border); border-radius: var(--radius); cursor: pointer; transition: all 0.2s; }
+.quiz-option:hover { border-color: var(--primary); background: var(--primary-light); }
+.quiz-option.selected { border-color: var(--primary); background: var(--primary-light); }
+.quiz-option.correct { border-color: var(--success); background: #d1fae5; }
+.quiz-option.wrong { border-color: var(--danger); background: #fee2e2; }
+.quiz-timer { font-size: 24px; font-weight: 700; color: var(--danger); text-align: center; margin-bottom: 20px; }
+
+/* Notes Editor */
+.notes-editor { min-height: 300px; font-family: monospace; resize: vertical; }
+.notes-preview { min-height: 300px; padding: 16px; background: var(--light); border-radius: var(--radius); overflow-y: auto; }
+
+/* Buttons */
+.btn { padding: 10px 20px; border-radius: 8px; border: none; cursor: pointer; font-weight: 600; transition: all 0.2s; display: inline-flex; align-items: center; gap: 8px; }
+.btn-primary { background: var(--primary); color: white; }
+.btn-primary:hover { background: var(--primary-dark); transform: translateY(-1px); }
+.btn-secondary { background: var(--light); color: var(--dark); border: 1px solid var(--border); }
+.btn-danger { background: var(--danger); color: white; }
+.btn-success { background: var(--success); color: white; }
+.btn-sm { padding: 6px 12px; font-size: 13px; }
 
 /* Forms */
-.form-group { margin-bottom:20px; }
-.form-label { display:block; font-size:13px; font-weight:600; margin-bottom:6px; color:var(--text); }
-.form-input, .form-select, .form-textarea { width:100%; padding:10px 14px; border:1.5px solid var(--border); border-radius:var(--radius); background:var(--surface); transition:border-color .15s; font-size:14px; }
-.form-input:focus, .form-select:focus, .form-textarea:focus { outline:none; border-color:var(--brand); }
-.form-textarea { resize:vertical; min-height:100px; }
-.form-row { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+.form-group { margin-bottom: 20px; }
+.form-label { display: block; margin-bottom: 6px; font-weight: 600; font-size: 14px; }
+.form-input, .form-select, .form-textarea { width: 100%; padding: 10px 12px; border: 1px solid var(--border); border-radius: 8px; font-size: 14px; transition: border-color 0.2s; }
+.form-input:focus, .form-select:focus, .form-textarea:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px var(--primary-light); }
+.form-textarea { resize: vertical; min-height: 100px; }
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
 
 /* Tables */
-.table-wrapper { overflow-x:auto; border-radius:var(--radius-lg); border:1px solid var(--border); background:var(--surface); }
-.data-table { width:100%; border-collapse:collapse; }
-.data-table th { background:var(--surface-alt); padding:14px 16px; text-align:left; font-size:12px; font-weight:600; color:var(--text-2); text-transform:uppercase; letter-spacing:.5px; border-bottom:1px solid var(--border); }
-.data-table td { padding:14px 16px; border-bottom:1px solid var(--border); font-size:14px; }
-.data-table tr:last-child td { border-bottom:none; }
-.data-table tr:hover td { background:var(--surface-alt); }
-.actions-cell { display:flex; gap:8px; flex-wrap:wrap; }
+.table-wrapper { overflow-x: auto; border-radius: var(--radius); border: 1px solid var(--border); }
+.data-table { width: 100%; border-collapse: collapse; }
+.data-table th, .data-table td { padding: 12px 16px; text-align: left; border-bottom: 1px solid var(--border); }
+.data-table th { background: var(--light); font-weight: 600; }
+.data-table tr:last-child td { border-bottom: none; }
+.data-table tr:hover td { background: var(--primary-light); }
 
-/* Lesson/Module Items */
-.module-item { background:var(--surface-alt); border-radius:var(--radius-lg); margin-bottom:16px; overflow:hidden; }
-.module-header { padding:16px 20px; background:var(--surface); border-bottom:1px solid var(--border); display:flex; align-items:center; justify-content:space-between; cursor:pointer; }
-.module-header:hover { background:var(--surface-hover); }
-.module-title { font-weight:600; font-size:16px; }
-.lesson-item { padding:12px 20px 12px 40px; border-bottom:1px solid var(--border); display:flex; align-items:center; gap:12px; cursor:pointer; transition:background .15s; }
-.lesson-item:hover { background:var(--surface-alt); }
-.lesson-icon { font-size:16px; width:24px; }
-.lesson-title { flex:1; font-size:14px; }
-.lesson-duration { font-size:12px; color:var(--text-3); }
-.lesson-type { font-size:11px; padding:2px 8px; border-radius:12px; background:var(--brand-light); color:var(--brand); }
+/* Badges */
+.badge { display: inline-block; padding: 4px 10px; border-radius: 20px; font-size: 12px; font-weight: 600; }
+.badge-success { background: #d1fae5; color: #065f46; }
+.badge-warning { background: #fed7aa; color: #92400e; }
+.badge-info { background: #dbeafe; color: #1e40af; }
+.badge-danger { background: #fee2e2; color: #991b1b; }
 
-/* Quiz Options */
-.quiz-option { padding:12px 16px; border:2px solid var(--border); border-radius:var(--radius); margin-bottom:10px; cursor:pointer; transition:all .15s; }
-.quiz-option:hover { border-color:var(--brand-mid); background:var(--brand-light); }
-.quiz-option.selected { border-color:var(--brand); background:var(--brand-light); }
-.quiz-option.correct { border-color:var(--success); background:var(--success-bg); }
-.quiz-option.wrong { border-color:var(--danger); background:var(--danger-bg); }
+/* Modal */
+.modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); display: none; align-items: center; justify-content: center; z-index: 1000; }
+.modal-overlay.active { display: flex; }
+.modal { background: var(--white); border-radius: var(--radius-lg); width: 90%; max-width: 700px; max-height: 85vh; overflow-y: auto; }
+.modal-header { padding: 20px 24px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
+.modal-body { padding: 24px; }
+.modal-close { background: none; border: none; font-size: 24px; cursor: pointer; color: var(--gray); }
 
 /* Toast */
-.toast { position:fixed; bottom:24px; right:24px; background:var(--text); color:white; padding:12px 20px; border-radius:var(--radius); font-size:14px; z-index:9999; max-width:340px; animation:toastIn .25s ease; box-shadow:var(--shadow-md); }
-.toast.success { background:var(--success); }
-.toast.danger { background:var(--danger); }
-.toast.info { background:var(--info); }
-@keyframes toastIn { from { opacity:0; transform:translateY(20px); } to { opacity:1; transform:translateY(0); } }
+.toast-container { position: fixed; bottom: 20px; right: 20px; z-index: 1100; }
+.toast { background: var(--dark); color: white; padding: 12px 20px; border-radius: 8px; margin-top: 10px; animation: slideIn 0.3s ease; box-shadow: var(--shadow-lg); }
+.toast.success { background: var(--success); }
+.toast.error { background: var(--danger); }
+.toast.info { background: var(--info); }
+@keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
 
-/* Auth */
-.auth-page { min-height:100vh; display:flex; background:linear-gradient(135deg,#667eea 0%,#764ba2 100%); }
-.auth-left { flex:1; display:flex; flex-direction:column; justify-content:center; padding:60px; color:white; }
-.auth-left h1 { font-size:48px; font-weight:800; letter-spacing:-1.5px; margin-bottom:16px; }
-.auth-left p { font-size:18px; opacity:.9; max-width:450px; line-height:1.6; }
-.auth-features { margin-top:50px; display:flex; flex-direction:column; gap:16px; }
-.auth-feature { display:flex; align-items:center; gap:14px; font-size:16px; }
-.auth-feature-icon { width:36px; height:36px; background:rgba(255,255,255,.2); border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:18px; flex-shrink:0; }
-.auth-right { width:500px; background:white; display:flex; align-items:center; justify-content:center; padding:48px; border-radius:20px 0 0 20px; }
-.auth-form { width:100%; max-width:380px; }
-.auth-form h2 { font-size:28px; font-weight:700; margin-bottom:8px; }
-.auth-form .auth-sub { color:var(--text-2); margin-bottom:32px; font-size:15px; }
-
-/* Tabs */
-.tabs { display:flex; gap:4px; background:var(--surface-alt); border-radius:var(--radius); padding:4px; width:fit-content; margin-bottom:24px; }
-.tab { padding:8px 20px; border-radius:8px; font-size:14px; font-weight:500; border:none; background:none; color:var(--text-2); cursor:pointer; transition:all .15s; }
-.tab.active { background:var(--surface); color:var(--text); box-shadow:var(--shadow); }
+/* Auth Page */
+.auth-page { min-height: 100vh; display: flex; align-items: center; justify-content: center; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+.auth-card { background: var(--white); border-radius: 24px; padding: 48px; width: 100%; max-width: 480px; margin: 20px; box-shadow: var(--shadow-lg); }
+.auth-title { font-size: 32px; font-weight: 800; margin-bottom: 8px; text-align: center; color: var(--primary); }
+.auth-subtitle { text-align: center; color: var(--gray); margin-bottom: 32px; }
 
 /* Loading */
-.loading { text-align:center; padding:60px; color:var(--text-3); }
-.spinner { width:50px; height:50px; border:3px solid var(--border); border-top-color:var(--brand); border-radius:50%; animation:spin 1s linear infinite; margin:0 auto 20px; }
-@keyframes spin { to { transform:rotate(360deg); } }
+.loading { text-align: center; padding: 60px; }
+.spinner { width: 48px; height: 48px; border: 3px solid var(--border); border-top-color: var(--primary); border-radius: 50%; animation: spin 1s linear infinite; margin: 0 auto 16px; }
+@keyframes spin { to { transform: rotate(360deg); } }
 
-/* Utility */
-.text-center { text-align:center; }
-.text-muted { color:var(--text-3); }
-.mt-2 { margin-top:8px; }
-.mt-3 { margin-top:12px; }
-.mt-4 { margin-top:16px; }
-.mb-2 { margin-bottom:8px; }
-.mb-3 { margin-bottom:12px; }
-.mb-4 { margin-bottom:16px; }
-.flex { display:flex; }
-.items-center { align-items:center; }
-.justify-between { justify-content:space-between; }
-.gap-2 { gap:8px; }
-.gap-3 { gap:12px; }
-.w-full { width:100%; }
-
-@media (max-width:768px) {
-  .sidebar { transform:translateX(-100%); position:fixed; }
-  .sidebar.open { transform:none; }
-  .main { margin-left:0; }
-  .auth-left { display:none; }
-  .auth-right { width:100%; border-radius:0; }
-  .stats-row { grid-template-columns:1fr; }
+/* Responsive */
+@media (max-width: 768px) {
+  .sidebar { transform: translateX(-100%); position: fixed; transition: transform 0.3s; }
+  .sidebar.open { transform: translateX(0); }
+  .main { margin-left: 0; }
+  .content { padding: 20px; }
+  .form-row { grid-template-columns: 1fr; }
+  .courses-grid { grid-template-columns: 1fr; }
 }
+
+/* PDF Viewer */
+.pdf-viewer { width: 100%; height: 600px; border: 1px solid var(--border); border-radius: var(--radius); }
+
+/* Assignment Upload */
+.upload-area { border: 2px dashed var(--border); border-radius: var(--radius); padding: 40px; text-align: center; cursor: pointer; transition: all 0.2s; }
+.upload-area:hover { border-color: var(--primary); background: var(--primary-light); }
+.upload-area.dragover { border-color: var(--success); background: #d1fae5; }
+
+/* Discussion Threads */
+.thread-item { padding: 16px; border-bottom: 1px solid var(--border); cursor: pointer; transition: background 0.2s; }
+.thread-item:hover { background: var(--primary-light); }
+.thread-title { font-weight: 600; margin-bottom: 6px; }
+.thread-meta { display: flex; gap: 16px; font-size: 12px; color: var(--gray); }
 </style>
 </head>
 <body>
@@ -236,10 +241,9 @@ firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 
 // ============================================
-// GLOBAL STATE
+// APP STATE
 // ============================================
-let G = {
-  view: "auth",
+let App = {
   user: null,
   users: [],
   courses: [],
@@ -247,893 +251,892 @@ let G = {
   completedLessons: {},
   quizResults: {},
   assignmentSubmissions: {},
+  notes: {},
+  discussions: [],
+  currentView: 'auth',
+  loading: false,
+  adminTab: 'overview',
   currentCourse: null,
   currentModule: null,
   currentLesson: null,
   quizState: null,
-  adminTab: "overview",
-  courseTab: "overview",
-  loading: false,
-  selectedCourseForEdit: null,
-  selectedModuleForEdit: null
+  courseTab: 'overview',
+  openModules: new Set()
 };
 
 // ============================================
 // HELPER FUNCTIONS
 // ============================================
-function toast(msg, type = "info") {
-  const el = document.createElement("div");
-  el.className = `toast ${type}`;
-  el.innerHTML = `<span>${type === 'success' ? '✓' : type === 'danger' ? '⚠' : 'ℹ'}</span> ${msg}`;
-  document.body.appendChild(el);
-  setTimeout(() => el.remove(), 3200);
-}
-
-function showLoading() { G.loading = true; render(); }
-function hideLoading() { G.loading = false; render(); }
-
-function openModal(title, contentHtml) {
-  const modal = document.getElementById('customModal');
-  if (!modal) {
-    const div = document.createElement('div');
-    div.id = 'customModal';
-    div.className = 'modal-overlay';
-    div.innerHTML = `<div class="modal"><div class="modal-header"><span class="modal-title"></span><button class="modal-close" onclick="closeModal()">×</button></div><div class="modal-body"></div></div>`;
-    document.body.appendChild(div);
+function showToast(message, type = 'success') {
+  let container = document.querySelector('.toast-container');
+  if (!container) {
+    container = document.createElement('div');
+    container.className = 'toast-container';
+    document.body.appendChild(container);
   }
-  const modal = document.getElementById('customModal');
-  modal.querySelector('.modal-title').textContent = title;
-  modal.querySelector('.modal-body').innerHTML = contentHtml;
-  modal.classList.add('active');
+  const toast = document.createElement('div');
+  toast.className = `toast ${type}`;
+  toast.innerHTML = `<span>${type === 'success' ? '✓' : type === 'error' ? '⚠' : 'ℹ'}</span> ${message}`;
+  container.appendChild(toast);
+  setTimeout(() => toast.remove(), 3000);
 }
 
-function closeModal() {
-  const modal = document.getElementById('customModal');
-  if (modal) modal.classList.remove('active');
-}
-
-// ============================================
-// FIREBASE DATA OPERATIONS
-// ============================================
-async function loadAllData() {
-  showLoading();
-  try {
-    const coursesSnapshot = await db.collection("courses").get();
-    G.courses = [];
-    coursesSnapshot.forEach(doc => {
-      G.courses.push({ id: doc.id, ...doc.data() });
-    });
-    
-    if (G.user && G.user.role === "admin") {
-      const usersSnapshot = await db.collection("users").get();
-      G.users = [];
-      usersSnapshot.forEach(doc => {
-        G.users.push({ id: doc.id, ...doc.data() });
-      });
-    }
-    
-    if (G.user && G.user.role === "student") {
-      const progressDoc = await db.collection("progress").doc(G.user.id).get();
-      if (progressDoc.exists) {
-        const data = progressDoc.data();
-        G.enrollments = data.enrollments || {};
-        G.completedLessons = data.completedLessons || {};
-        G.quizResults = data.quizResults || {};
-        G.assignmentSubmissions = data.assignmentSubmissions || {};
-        G.user.points = data.points || 0;
-      }
-    }
-  } catch (error) {
-    console.error("Error loading data:", error);
-    toast("Error connecting to database", "danger");
-  }
-  hideLoading();
+function showLoading(show) {
+  App.loading = show;
   render();
 }
 
-async function saveUserProgress() {
-  if (!G.user || G.user.role !== "student") return;
+function closeModal() {
+  const modal = document.getElementById('globalModal');
+  if (modal) modal.classList.remove('active');
+}
+
+function openModal(title, content) {
+  let modal = document.getElementById('globalModal');
+  if (!modal) {
+    modal = document.createElement('div');
+    modal.id = 'globalModal';
+    modal.className = 'modal-overlay';
+    modal.innerHTML = `
+      <div class="modal">
+        <div class="modal-header"><span class="modal-title"></span><button class="modal-close" onclick="closeModal()">×</button></div>
+        <div class="modal-body"></div>
+      </div>
+    `;
+    document.body.appendChild(modal);
+  }
+  modal.querySelector('.modal-title').textContent = title;
+  modal.querySelector('.modal-body').innerHTML = content;
+  modal.classList.add('active');
+}
+
+function toggleModule(moduleId) {
+  if (App.openModules.has(moduleId)) App.openModules.delete(moduleId);
+  else App.openModules.add(moduleId);
+  render();
+}
+
+// ============================================
+// FIREBASE OPERATIONS
+// ============================================
+async function loadData() {
   try {
-    await db.collection("progress").doc(G.user.id).set({
-      enrollments: G.enrollments,
-      completedLessons: G.completedLessons,
-      quizResults: G.quizResults,
-      assignmentSubmissions: G.assignmentSubmissions,
-      points: G.user.points || 0,
-      updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+    const [coursesSnap, usersSnap, discussionsSnap] = await Promise.all([
+      db.collection('courses').get(),
+      db.collection('users').get(),
+      db.collection('discussions').get()
+    ]);
+    
+    App.courses = [];
+    coursesSnap.forEach(doc => App.courses.push({ id: doc.id, ...doc.data() }));
+    
+    App.users = [];
+    usersSnap.forEach(doc => App.users.push({ id: doc.id, ...doc.data() }));
+    
+    App.discussions = [];
+    discussionsSnap.forEach(doc => App.discussions.push({ id: doc.id, ...doc.data() }));
+    
+    if (App.user && App.user.role === 'student') {
+      const progress = await db.collection('progress').doc(App.user.id).get();
+      if (progress.exists) {
+        const data = progress.data();
+        App.enrollments = data.enrollments || {};
+        App.completedLessons = data.completedLessons || {};
+        App.quizResults = data.quizResults || {};
+        App.assignmentSubmissions = data.assignmentSubmissions || {};
+        App.notes = data.notes || {};
+        App.user.points = data.points || 0;
+      }
+    }
+  } catch (error) {
+    console.error('Load error:', error);
+    showToast('Error loading data', 'error');
+  }
+}
+
+async function saveProgress() {
+  if (!App.user || App.user.role !== 'student') return;
+  try {
+    await db.collection('progress').doc(App.user.id).set({
+      enrollments: App.enrollments,
+      completedLessons: App.completedLessons,
+      quizResults: App.quizResults,
+      assignmentSubmissions: App.assignmentSubmissions,
+      notes: App.notes,
+      points: App.user.points || 0,
+      updatedAt: new Date()
     }, { merge: true });
   } catch (error) {
-    console.error("Error saving progress:", error);
+    console.error('Save error:', error);
   }
 }
 
 async function addCourse(courseData) {
-  showLoading();
   try {
-    await db.collection("courses").add({
-      ...courseData,
-      createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-      students: 0,
-      rating: 5.0,
-      modules: courseData.modules || []
-    });
-    await loadAllData();
-    toast("Course added successfully!", "success");
+    await db.collection('courses').add(courseData);
+    await loadData();
+    showToast('Course added successfully!');
+    render();
   } catch (error) {
-    console.error("Error adding course:", error);
-    toast("Error adding course", "danger");
+    showToast('Error adding course', 'error');
   }
-  hideLoading();
 }
 
-async function updateCourse(courseId, courseData) {
-  showLoading();
+async function updateCourse(courseId, data) {
   try {
-    await db.collection("courses").doc(courseId).update(courseData);
-    await loadAllData();
-    toast("Course updated successfully!", "success");
+    await db.collection('courses').doc(courseId).update(data);
+    await loadData();
+    showToast('Course updated!');
+    render();
   } catch (error) {
-    console.error("Error updating course:", error);
-    toast("Error updating course", "danger");
+    showToast('Error updating course', 'error');
   }
-  hideLoading();
 }
 
 async function deleteCourse(courseId) {
-  if (!confirm("⚠️ Delete this course? All student progress will be lost!")) return;
-  showLoading();
+  if (!confirm('Delete this course? All data will be lost.')) return;
   try {
-    await db.collection("courses").doc(courseId).delete();
-    await loadAllData();
-    toast("Course deleted!", "success");
-    if (G.view === "course-detail") G.view = "admin";
+    await db.collection('courses').doc(courseId).delete();
+    await loadData();
+    showToast('Course deleted');
+    if (App.currentView === 'course-detail') App.currentView = 'admin';
+    render();
   } catch (error) {
-    console.error("Error deleting course:", error);
-    toast("Error deleting course", "danger");
+    showToast('Error deleting course', 'error');
   }
-  hideLoading();
 }
 
-async function addModule(courseId, moduleData) {
-  const course = G.courses.find(c => c.id === courseId);
+async function addModule(courseId, moduleTitle) {
+  const course = App.courses.find(c => c.id === courseId);
   if (!course) return;
-  const newModule = { id: Date.now(), title: moduleData.title, lessons: [] };
-  const updatedModules = [...(course.modules || []), newModule];
-  await updateCourse(courseId, { modules: updatedModules });
+  const newModule = { id: Date.now(), title: moduleTitle, lessons: [] };
+  const modules = [...(course.modules || []), newModule];
+  await updateCourse(courseId, { modules });
 }
 
-async function updateModule(courseId, moduleId, moduleData) {
-  const course = G.courses.find(c => c.id === courseId);
+async function updateModule(courseId, moduleId, newTitle) {
+  const course = App.courses.find(c => c.id === courseId);
   if (!course) return;
-  const updatedModules = (course.modules || []).map(m => m.id === moduleId ? { ...m, title: moduleData.title } : m);
-  await updateCourse(courseId, { modules: updatedModules });
+  const modules = (course.modules || []).map(m => m.id === moduleId ? { ...m, title: newTitle } : m);
+  await updateCourse(courseId, { modules });
 }
 
 async function deleteModule(courseId, moduleId) {
-  const course = G.courses.find(c => c.id === courseId);
+  const course = App.courses.find(c => c.id === courseId);
   if (!course) return;
-  const updatedModules = (course.modules || []).filter(m => m.id !== moduleId);
-  await updateCourse(courseId, { modules: updatedModules });
+  const modules = (course.modules || []).filter(m => m.id !== moduleId);
+  await updateCourse(courseId, { modules });
 }
 
 async function addLesson(courseId, moduleId, lessonData) {
-  const course = G.courses.find(c => c.id === courseId);
+  const course = App.courses.find(c => c.id === courseId);
   if (!course) return;
   const newLesson = { id: Date.now(), ...lessonData };
-  const updatedModules = (course.modules || []).map(m => 
+  const modules = (course.modules || []).map(m => 
     m.id === moduleId ? { ...m, lessons: [...(m.lessons || []), newLesson] } : m
   );
-  await updateCourse(courseId, { modules: updatedModules });
+  await updateCourse(courseId, { modules });
 }
 
 async function updateLesson(courseId, moduleId, lessonId, lessonData) {
-  const course = G.courses.find(c => c.id === courseId);
+  const course = App.courses.find(c => c.id === courseId);
   if (!course) return;
-  const updatedModules = (course.modules || []).map(m => 
+  const modules = (course.modules || []).map(m =>
     m.id === moduleId ? { ...m, lessons: (m.lessons || []).map(l => l.id === lessonId ? { ...l, ...lessonData } : l) } : m
   );
-  await updateCourse(courseId, { modules: updatedModules });
+  await updateCourse(courseId, { modules });
 }
 
 async function deleteLesson(courseId, moduleId, lessonId) {
-  const course = G.courses.find(c => c.id === courseId);
+  const course = App.courses.find(c => c.id === courseId);
   if (!course) return;
-  const updatedModules = (course.modules || []).map(m => 
+  const modules = (course.modules || []).map(m =>
     m.id === moduleId ? { ...m, lessons: (m.lessons || []).filter(l => l.id !== lessonId) } : m
   );
-  await updateCourse(courseId, { modules: updatedModules });
+  await updateCourse(courseId, { modules });
 }
 
 async function approveUser(userId) {
   try {
-    await db.collection("users").doc(userId).update({ status: "approved" });
-    await loadAllData();
-    toast("User approved!", "success");
+    await db.collection('users').doc(userId).update({ status: 'approved' });
+    await loadData();
+    showToast('User approved!');
+    render();
   } catch (error) {
-    console.error("Error approving user:", error);
-    toast("Error approving user", "danger");
+    showToast('Error approving user', 'error');
   }
 }
 
 async function rejectUser(userId) {
-  if (!confirm("Reject and remove this user?")) return;
+  if (!confirm('Reject and remove this user?')) return;
   try {
-    await db.collection("users").doc(userId).delete();
-    await loadAllData();
-    toast("User rejected", "info");
+    await db.collection('users').doc(userId).delete();
+    await loadData();
+    showToast('User removed');
+    render();
   } catch (error) {
-    console.error("Error rejecting user:", error);
-    toast("Error rejecting user", "danger");
+    showToast('Error rejecting user', 'error');
   }
 }
 
-async function enrollStudentInCourse(courseId, studentId) {
+async function addDiscussion(threadData) {
   try {
-    await db.collection("progress").doc(studentId).set({
-      enrollments: { [courseId]: true }
-    }, { merge: true });
-    toast("Student enrolled!", "success");
+    await db.collection('discussions').add(threadData);
+    await loadData();
+    showToast('Discussion posted!');
+    render();
   } catch (error) {
-    console.error("Error enrolling student:", error);
-    toast("Error enrolling student", "danger");
+    showToast('Error posting discussion', 'error');
   }
+}
+
+async function addReply(threadId, replyData) {
+  const thread = App.discussions.find(t => t.id === threadId);
+  if (!thread) return;
+  const replies = [...(thread.replies || []), { ...replyData, id: Date.now(), createdAt: new Date() }];
+  await db.collection('discussions').doc(threadId).update({ replies });
+  await loadData();
+  showToast('Reply added!');
+  render();
 }
 
 // ============================================
 // AUTHENTICATION
 // ============================================
-async function handleLogin(email, password, role) {
-  showLoading();
+async function login(email, password, role) {
+  showLoading(true);
   try {
-    const usersSnapshot = await db.collection("users").where("email", "==", email).where("password", "==", password).get();
-    if (usersSnapshot.empty) { toast("Invalid credentials", "danger"); hideLoading(); return false; }
-    const userDoc = usersSnapshot.docs[0];
-    const userData = userDoc.data();
-    if (role === "admin" && userData.role !== "admin") { toast("Not an admin account", "danger"); hideLoading(); return false; }
-    if (role === "student" && userData.status !== "approved") { toast("Account pending approval", "danger"); hideLoading(); return false; }
-    G.user = { id: userDoc.id, ...userData };
-    sessionStorage.setItem("lf_user", JSON.stringify(G.user));
-    await loadAllData();
-    G.view = role === "admin" ? "admin" : "home";
+    const users = App.users.length ? App.users : (await db.collection('users').get()).docs.map(d => ({ id: d.id, ...d.data() }));
+    const user = users.find(u => u.email === email && u.password === password);
+    if (!user) { showToast('Invalid credentials', 'error'); showLoading(false); return false; }
+    if (role === 'admin' && user.role !== 'admin') { showToast('Not an admin account', 'error'); showLoading(false); return false; }
+    if (role === 'student' && user.status !== 'approved') { showToast('Account pending approval', 'error'); showLoading(false); return false; }
+    App.user = user;
+    sessionStorage.setItem('learnflow_user', JSON.stringify(user));
+    await loadData();
+    App.currentView = user.role === 'admin' ? 'admin' : 'home';
+    showToast(`Welcome back, ${user.name}!`);
     render();
-    toast(`Welcome back, ${G.user.name}!`, "success");
     return true;
-  } catch (error) { console.error("Login error:", error); toast("Login error", "danger"); hideLoading(); return false; }
+  } catch (error) {
+    showToast('Login error: ' + error.message, 'error');
+    return false;
+  } finally {
+    showLoading(false);
+  }
 }
 
-async function handleRegister(name, email, password) {
-  showLoading();
+async function register(name, email, password) {
+  showLoading(true);
   try {
-    const existing = await db.collection("users").where("email", "==", email).get();
-    if (!existing.empty) { toast("Email already registered", "danger"); hideLoading(); return false; }
-    await db.collection("users").add({ name, email, password, role: "student", status: "pending", points: 0, createdAt: firebase.firestore.FieldValue.serverTimestamp() });
-    toast("Account created! Awaiting admin approval.", "success");
-    hideLoading();
+    const existing = await db.collection('users').where('email', '==', email).get();
+    if (!existing.empty) { showToast('Email already registered', 'error'); showLoading(false); return false; }
+    await db.collection('users').add({
+      name, email, password, role: 'student', status: 'pending', points: 0, createdAt: new Date()
+    });
+    showToast('Account created! Awaiting admin approval.');
+    renderAuthPage();
     return true;
-  } catch (error) { console.error("Registration error:", error); toast("Registration error", "danger"); hideLoading(); return false; }
+  } catch (error) {
+    showToast('Registration error: ' + error.message, 'error');
+    return false;
+  } finally {
+    showLoading(false);
+  }
 }
 
-function logout() { G.user = null; sessionStorage.removeItem("lf_user"); G.view = "auth"; render(); }
+function logout() {
+  App.user = null;
+  sessionStorage.removeItem('learnflow_user');
+  App.currentView = 'auth';
+  render();
+}
 
 // ============================================
 // RENDER FUNCTIONS
 // ============================================
 function render() {
-  const root = document.getElementById("root");
-  if (G.loading) { root.innerHTML = `<div class="loading"><div class="spinner"></div><p>Loading...</p></div>`; return; }
-  if (G.view === "auth") { root.innerHTML = renderAuth(); bindAuth(); return; }
-  root.innerHTML = renderShell();
-  const content = document.getElementById("page-content");
-  const views = { home: renderHome, catalog: renderCatalog, "course-detail": renderCourseDetail, lesson: renderLesson, quiz: renderQuiz, assignments: renderAssignments, analytics: renderAnalytics, certificates: renderCertificates, admin: renderAdmin };
-  if (views[G.view]) content.innerHTML = views[G.view]();
-  bindNav();
-  if (G.view === "admin") bindAdminEvents();
-}
-
-function renderAuth() {
-  return `
-  <div class="auth-page">
-    <div class="auth-left">
-      <div style="font-size:32px;font-weight:800;margin-bottom:16px;">🎓 LearnFlow Pro</div>
-      <h1>Learn without limits.</h1>
-      <p>The ultimate learning platform with courses, quizzes, certificates, and real-time progress tracking.</p>
-      <div class="auth-features">
-        <div class="auth-feature"><div class="auth-feature-icon">📚</div>200+ Expert-Led Courses</div>
-        <div class="auth-feature"><div class="auth-feature-icon">🧠</div>Interactive Quizzes & Assessments</div>
-        <div class="auth-feature"><div class="auth-feature-icon">🏆</div>Earn Certificates & Badges</div>
-        <div class="auth-feature"><div class="auth-feature-icon">📊</div>Track Your Progress</div>
-      </div>
-    </div>
-    <div class="auth-right">
-      <div class="auth-form" id="authFormWrap">
-        <h2>Welcome back</h2>
-        <p class="auth-sub">Sign in to continue your learning journey</p>
-        <div class="form-group"><label class="form-label">Email</label><input class="form-input" id="li-email" type="email" placeholder="you@example.com"></div>
-        <div class="form-group"><label class="form-label">Password</label><input class="form-input" id="li-pass" type="password" placeholder="••••••••"></div>
-        <button class="btn btn-primary w-full" id="li-btn">Sign In</button>
-        <div class="text-center mt-3">New user? <a href="#" onclick="showRegister()">Create account</a> | <a href="#" onclick="showAdminLogin()">Admin login</a></div>
-      </div>
-    </div>
-  </div>`;
-}
-
-function showRegister() {
-  document.getElementById("authFormWrap").innerHTML = `
-    <h2>Create account</h2>
-    <p class="auth-sub">Start your learning journey today</p>
-    <div class="form-group"><label class="form-label">Full name</label><input class="form-input" id="rg-name" placeholder="John Doe"></div>
-    <div class="form-group"><label class="form-label">Email</label><input class="form-input" id="rg-email" type="email" placeholder="you@example.com"></div>
-    <div class="form-group"><label class="form-label">Password</label><input class="form-input" id="rg-pass" type="password" placeholder="Min 6 characters"></div>
-    <button class="btn btn-primary w-full" id="rg-btn">Create Account</button>
-    <div class="text-center mt-3">Already have an account? <a href="#" onclick="location.reload()">Sign in</a></div>
-  `;
-  document.getElementById("rg-btn").onclick = () => {
-    const name = document.getElementById("rg-name")?.value.trim();
-    const email = document.getElementById("rg-email")?.value.trim();
-    const pass = document.getElementById("rg-pass")?.value;
-    if (name && email && pass) handleRegister(name, email, pass);
-    else toast("Fill all fields", "danger");
-  };
-}
-
-function showAdminLogin() {
-  document.getElementById("authFormWrap").innerHTML = `
-    <h2>Admin Portal</h2>
-    <p class="auth-sub">Platform management access</p>
-    <div class="form-group"><label class="form-label">Email</label><input class="form-input" id="adm-email" type="email" placeholder="admin@learnflow.com"></div>
-    <div class="form-group"><label class="form-label">Password</label><input class="form-input" id="adm-pass" type="password" placeholder="••••••••"></div>
-    <button class="btn btn-primary w-full" id="adm-btn">Admin Sign In</button>
-    <div class="text-center mt-3"><a href="#" onclick="location.reload()">← Back to student login</a></div>
-  `;
-  document.getElementById("adm-btn").onclick = () => {
-    const email = document.getElementById("adm-email")?.value.trim();
-    const pass = document.getElementById("adm-pass")?.value;
-    if (email && pass) handleLogin(email, pass, "admin");
-    else toast("Fill all fields", "danger");
-  };
-}
-
-function bindAuth() {
-  const liBtn = document.getElementById("li-btn");
-  if (liBtn) liBtn.onclick = () => {
-    const email = document.getElementById("li-email")?.value.trim();
-    const pass = document.getElementById("li-pass")?.value;
-    if (email && pass) handleLogin(email, pass, "student");
-    else toast("Fill all fields", "danger");
-  };
-}
-
-function renderShell() {
-  const isAdmin = G.user?.role === "admin";
-  const pendingCount = G.users.filter(u => u.status === "pending").length;
-  const initials = G.user?.name?.split(" ").map(w=>w[0]).join("").slice(0,2).toUpperCase() || "?";
-  return `
-  <div class="app-shell">
-    <aside class="sidebar">
-      <div class="sidebar-logo"><div class="wordmark">🎓 LearnFlow Pro</div><div class="tagline">Advanced Learning Platform</div></div>
-      <nav class="sidebar-nav">
-        ${isAdmin ? `
-          <div class="nav-section-label">Administration</div>
-          <button class="nav-item ${G.view==='admin'?'active':''}" data-nav="admin"><span class="nav-icon">📊</span> Dashboard ${pendingCount>0?`<span class="nav-badge">${pendingCount}</span>`:""}</button>
-        ` : `
-          <div class="nav-section-label">Learning</div>
-          <button class="nav-item ${G.view==='home'?'active':''}" data-nav="home"><span class="nav-icon">🏠</span> Dashboard</button>
-          <button class="nav-item ${G.view==='catalog'?'active':''}" data-nav="catalog"><span class="nav-icon">📚</span> Course Catalog</button>
-          <div class="nav-section-label">My Progress</div>
-          <button class="nav-item ${G.view==='assignments'?'active':''}" data-nav="assignments"><span class="nav-icon">📝</span> Assignments</button>
-          <button class="nav-item ${G.view==='analytics'?'active':''}" data-nav="analytics"><span class="nav-icon">📈</span> Analytics</button>
-          <button class="nav-item ${G.view==='certificates'?'active':''}" data-nav="certificates"><span class="nav-icon">🏆</span> Certificates</button>
-        `}
-      </nav>
-      <div class="sidebar-footer">
-        <div class="user-pill"><div class="avatar">${initials}</div><div><div class="uname">${G.user?.name?.split(" ")[0] || ""}</div><div class="urole">${isAdmin ? "Administrator" : "Student"}</div></div></div>
-        <button class="logout-btn" onclick="logout()">🚪 Sign Out</button>
-      </div>
-    </aside>
-    <main class="main">
-      <header class="topbar"><div class="topbar-title">${getTitle()}</div><div class="topbar-actions">${!isAdmin ? `<span class="badge badge-brand">⭐ ${G.user?.points || 0} XP Points</span>` : ""}</div></header>
-      <div class="content-area" id="page-content"></div>
-    </main>
-  </div>`;
-}
-
-function getTitle() {
-  const titles = { home:"Dashboard", catalog:"Course Catalog", "course-detail":"Course Details", lesson:"Lesson", quiz:"Quiz", assignments:"Assignments", analytics:"Learning Analytics", certificates:"My Certificates", admin:"Admin Dashboard" };
-  return titles[G.view] || "LearnFlow Pro";
-}
-
-function bindNav() {
-  document.querySelectorAll("[data-nav]").forEach(btn => {
-    btn.onclick = () => { G.view = btn.dataset.nav; render(); };
-  });
-}
-
-// ============================================
-// STUDENT VIEWS
-// ============================================
-function renderHome() {
-  const enrolled = G.courses.filter(c => G.enrollments[c.id]);
-  const totalLessons = enrolled.reduce((sum, c) => sum + (c.modules?.reduce((s, m) => s + (m.lessons?.length || 0), 0) || 0), 0);
-  const completedCount = Object.keys(G.completedLessons).length;
-  const completionRate = totalLessons > 0 ? Math.round((completedCount / totalLessons) * 100) : 0;
-  const recentCourses = enrolled.slice(0, 3);
+  if (App.loading) {
+    document.getElementById('root').innerHTML = `<div class="loading"><div class="spinner"></div><p>Loading...</p></div>`;
+    return;
+  }
   
-  return `
-    <div style="margin-bottom:30px;">
-      <h1 style="font-size:28px;margin-bottom:8px;">Welcome back, ${G.user?.name?.split(" ")[0]}! 👋</h1>
-      <p class="text-muted">Continue your learning journey. You're doing great!</p>
-    </div>
-    <div class="stats-row">
-      <div class="stat-card"><div class="stat-num" style="color:var(--brand)">${enrolled.length}</div><div class="stat-label">Enrolled Courses</div><div class="stat-trend">📚 Keep learning!</div></div>
-      <div class="stat-card"><div class="stat-num" style="color:var(--success)">${completedCount}</div><div class="stat-label">Lessons Completed</div><div class="stat-trend">✅ Great progress!</div></div>
-      <div class="stat-card"><div class="stat-num" style="color:var(--warn)">${completionRate}%</div><div class="stat-label">Overall Completion</div><div class="stat-trend">${completionRate >= 50 ? '🎯 On track!' : '💪 Keep going!'}</div></div>
-      <div class="stat-card"><div class="stat-num" style="color:#7c3aed">${G.user?.points || 0}</div><div class="stat-label">XP Points Earned</div><div class="stat-trend">🏆 Keep earning!</div></div>
-    </div>
-    ${enrolled.length > 0 ? `
-      <div class="card">
-        <div class="section-header"><div class="section-title">📖 Continue Learning</div><button class="btn btn-secondary btn-sm" onclick="G.view='catalog';render()">Browse More →</button></div>
-        <div class="courses-grid">${recentCourses.map(c => renderCourseCard(c, true)).join('')}</div>
-      </div>
-    ` : `
-      <div class="card text-center" style="padding:60px;">
-        <div style="font-size:64px;margin-bottom:16px;">📚</div>
-        <h3>No courses yet!</h3>
-        <p class="text-muted" style="margin-bottom:20px;">Browse our catalog and enroll in your first course.</p>
-        <button class="btn btn-primary" onclick="G.view='catalog';render()">Explore Courses →</button>
-      </div>
-    `}
-    <div class="card">
-      <div class="section-header"><div class="section-title">🔥 Popular This Week</div></div>
-      <div class="courses-grid">${G.courses.slice(0, 3).map(c => renderCourseCard(c, false)).join('')}</div>
-    </div>
-  `;
+  if (!App.user || App.currentView === 'auth') {
+    renderAuthPage();
+    return;
+  }
+  
+  if (App.user.role === 'admin') renderAdminDashboard();
+  else renderStudentDashboard();
 }
 
-function renderCourseCard(course, isEnrolled) {
-  const progress = isEnrolled ? Math.floor(Math.random() * 60 + 20) : 0;
-  return `
-    <div class="course-card" onclick="openCourse('${course.id}')">
-      <div class="course-thumb" style="background:${course.thumbBg || '#eef2ff'}">${course.thumb || '📚'}</div>
-      <div class="course-body">
-        <div class="course-title">${course.title}</div>
-        <div class="course-meta"><span>⭐ ${course.rating || 4.8}</span><span>⏱️ ${course.duration || '10h'}</span><span>👥 ${course.students || 0}</span></div>
-        ${isEnrolled ? `<div class="course-progress"><div class="course-progress-bar" style="width:${progress}%"></div></div><div class="text-muted" style="font-size:12px;margin-top:6px;">${progress}% complete</div>` : `<div class="course-footer"><span class="badge badge-brand">$${course.price || 49}</span><button class="btn btn-primary btn-sm" onclick="event.stopPropagation();enroll('${course.id}')">Enroll Now</button></div>`}
+function renderAuthPage() {
+  const html = `
+    <div class="auth-page">
+      <div class="auth-card">
+        <h1 class="auth-title">🎓 LearnFlow Pro</h1>
+        <p class="auth-subtitle">Complete Learning Management System</p>
+        <div id="authForm">
+          <div class="form-group"><label class="form-label">Email</label><input type="email" id="loginEmail" class="form-input" placeholder="you@example.com"></div>
+          <div class="form-group"><label class="form-label">Password</label><input type="password" id="loginPassword" class="form-input" placeholder="••••••••"></div>
+          <button class="btn btn-primary" style="width:100%" onclick="handleLogin()">Sign In</button>
+          <div style="text-align:center;margin-top:20px"><a href="#" onclick="showRegisterForm()">Create Account</a> | <a href="#" onclick="showAdminLoginForm()">Admin Login</a></div>
+        </div>
       </div>
+    </div>
+  `;
+  document.getElementById('root').innerHTML = html;
+}
+
+window.handleLogin = () => {
+  const email = document.getElementById('loginEmail')?.value;
+  const pass = document.getElementById('loginPassword')?.value;
+  if (email && pass) login(email, pass, 'student');
+  else showToast('Enter email and password', 'error');
+};
+
+window.showRegisterForm = () => {
+  document.getElementById('authForm').innerHTML = `
+    <div class="form-group"><label class="form-label">Full Name</label><input type="text" id="regName" class="form-input" placeholder="John Doe"></div>
+    <div class="form-group"><label class="form-label">Email</label><input type="email" id="regEmail" class="form-input" placeholder="you@example.com"></div>
+    <div class="form-group"><label class="form-label">Password</label><input type="password" id="regPassword" class="form-input" placeholder="Min 6 characters"></div>
+    <button class="btn btn-primary" style="width:100%" onclick="handleRegister()">Create Account</button>
+    <div style="text-align:center;margin-top:20px"><a href="#" onclick="renderAuthPage()">Back to Sign In</a></div>
+  `;
+};
+
+window.handleRegister = () => {
+  const name = document.getElementById('regName')?.value;
+  const email = document.getElementById('regEmail')?.value;
+  const pass = document.getElementById('regPassword')?.value;
+  if (name && email && pass) register(name, email, pass);
+  else showToast('Fill all fields', 'error');
+};
+
+window.showAdminLoginForm = () => {
+  document.getElementById('authForm').innerHTML = `
+    <div class="form-group"><label class="form-label">Admin Email</label><input type="email" id="adminEmail" class="form-input" placeholder="admin@learnflow.com"></div>
+    <div class="form-group"><label class="form-label">Password</label><input type="password" id="adminPassword" class="form-input" placeholder="••••••••"></div>
+    <button class="btn btn-primary" style="width:100%" onclick="handleAdminLogin()">Admin Sign In</button>
+    <div style="text-align:center;margin-top:20px"><a href="#" onclick="renderAuthPage()">← Back</a></div>
+  `;
+};
+
+window.handleAdminLogin = () => {
+  const email = document.getElementById('adminEmail')?.value;
+  const pass = document.getElementById('adminPassword')?.value;
+  if (email && pass) login(email, pass, 'admin');
+  else showToast('Enter credentials', 'error');
+};
+
+function renderStudentDashboard() {
+  const enrolled = App.courses.filter(c => App.enrollments[c.id]);
+  const totalLessons = enrolled.reduce((sum, c) => sum + (c.modules?.reduce((s, m) => s + (m.lessons?.length || 0), 0) || 0), 0);
+  const completed = Object.keys(App.completedLessons).length;
+  const progress = totalLessons > 0 ? Math.round((completed / totalLessons) * 100) : 0;
+  
+  const html = `
+    <div class="app">
+      <div class="sidebar">
+        <div class="sidebar-header"><h2>🎓 LearnFlow Pro</h2></div>
+        <div class="sidebar-nav">
+          <div class="nav-item ${App.currentView === 'home' ? 'active' : ''}" onclick="changeView('home')"><span class="nav-icon">🏠</span> Dashboard</div>
+          <div class="nav-item ${App.currentView === 'catalog' ? 'active' : ''}" onclick="changeView('catalog')"><span class="nav-icon">📚</span> Course Catalog</div>
+          <div class="nav-item ${App.currentView === 'discussions' ? 'active' : ''}" onclick="changeView('discussions')"><span class="nav-icon">💬</span> Discussions</div>
+          <div class="nav-item ${App.currentView === 'certificates' ? 'active' : ''}" onclick="changeView('certificates')"><span class="nav-icon">🏆</span> Certificates</div>
+        </div>
+        <div class="user-section" style="display:flex;align-items:center;gap:12px"><div class="user-avatar">${App.user.name?.charAt(0) || 'U'}</div><div class="user-info"><div class="user-name">${App.user.name}</div><div class="user-role">Student</div></div><button class="btn btn-secondary btn-sm" onclick="logout()">Logout</button></div>
+      </div>
+      <div class="main">
+        <div class="top-bar"><h1 class="page-title">${App.currentView === 'home' ? 'Dashboard' : App.currentView === 'catalog' ? 'Course Catalog' : App.currentView === 'discussions' ? 'Discussions' : 'My Certificates'}</h1><div class="points-badge">⭐ ${App.user.points || 0} XP Points</div></div>
+        <div class="content" id="mainContent"></div>
+      </div>
+    </div>
+  `;
+  document.getElementById('root').innerHTML = html;
+  
+  const mainContent = document.getElementById('mainContent');
+  if (App.currentView === 'catalog') mainContent.innerHTML = renderCatalog();
+  else if (App.currentView === 'course-detail') mainContent.innerHTML = renderCourseDetail();
+  else if (App.currentView === 'discussions') mainContent.innerHTML = renderDiscussions();
+  else if (App.currentView === 'certificates') mainContent.innerHTML = renderCertificates();
+  else if (App.currentView === 'lesson') mainContent.innerHTML = renderLessonContent();
+  else if (App.currentView === 'quiz') mainContent.innerHTML = renderQuiz();
+  else mainContent.innerHTML = renderHomeDashboard(enrolled, completed, progress);
+}
+
+function renderHomeDashboard(enrolled, completed, progress) {
+  return `
+    <div class="stats-grid">
+      <div class="stat-card"><div class="stat-number">${enrolled.length}</div><div class="stat-label">Enrolled Courses</div></div>
+      <div class="stat-card"><div class="stat-number">${completed}</div><div class="stat-label">Lessons Completed</div></div>
+      <div class="stat-card"><div class="stat-number">${progress}%</div><div class="stat-label">Overall Progress</div></div>
+      <div class="stat-card"><div class="stat-number">${App.user.points || 0}</div><div class="stat-label">XP Points Earned</div></div>
+    </div>
+    <div class="card">
+      <div class="card-header"><div class="card-title">📖 My Courses</div><button class="btn btn-secondary btn-sm" onclick="changeView('catalog')">Browse More →</button></div>
+      <div class="courses-grid">${enrolled.length ? enrolled.map(c => renderCourseCard(c, true)).join('') : '<p style="text-align:center;padding:40px">No courses yet. Browse the catalog to get started!</p>'}</div>
+    </div>
+    <div class="card">
+      <div class="card-header"><div class="card-title">📊 Recent Activity</div></div>
+      <div class="table-wrapper"><table class="data-table"><thead><tr><th>Course</th><th>Progress</th><th>Last Activity</th></tr></thead><tbody>${enrolled.slice(0,5).map(c => `<tr><td>${c.title}</td><td><div class="course-progress" style="width:100px"><div class="course-progress-bar" style="width:${Math.floor(Math.random()*60+20)}%"></div></div></td><td>${new Date().toLocaleDateString()}</td></tr>`).join('')}</tbody></table></div>
     </div>
   `;
 }
 
 function renderCatalog() {
-  return `<h2 class="section-title">📚 All Courses</h2><div class="courses-grid">${G.courses.map(c => renderCourseCard(c, false)).join('')}</div>`;
+  return `<div class="card"><div class="card-header"><div class="card-title">📚 All Courses</div></div><div class="courses-grid">${App.courses.map(c => renderCourseCard(c, false)).join('')}</div></div>`;
 }
 
-function openCourse(courseId) {
-  G.currentCourse = G.courses.find(c => c.id === courseId);
-  G.view = "course-detail";
-  render();
+function renderCourseCard(course, enrolled) {
+  const progress = enrolled ? Math.floor(Math.random() * 60 + 20) : 0;
+  return `
+    <div class="course-card" onclick="openCourse('${course.id}')">
+      <div class="course-thumb" style="background:${course.thumbBg || '#eef2ff'}"><span class="course-badge">${course.level || 'Beginner'}</span>${course.thumb || '📚'}</div>
+      <div class="course-body"><h3 class="course-title">${course.title}</h3><div class="course-meta"><span>⭐ ${course.rating || 4.8}</span><span>⏱️ ${course.duration || '10h'}</span><span>📖 ${course.modules?.reduce((s,m)=>s+(m.lessons?.length||0),0) || 0} lessons</span></div>${enrolled ? `<div class="course-progress"><div class="course-progress-bar" style="width:${progress}%"></div></div><div style="font-size:12px;color:var(--gray)">${progress}% complete</div>` : `<div style="margin-top:12px"><span class="badge badge-success">$${course.price || 49}</span></div>`}</div>
+      <div class="course-footer"><span>👥 ${course.students || 0} students</span><button class="btn btn-primary btn-sm" onclick="event.stopPropagation();enrollCourse('${course.id}')">${enrolled ? 'Continue' : 'Enroll Now'}</button></div>
+    </div>
+  `;
 }
+
+window.enrollCourse = (courseId) => {
+  App.enrollments[courseId] = true;
+  saveProgress();
+  showToast('Enrolled successfully! 🎉');
+  render();
+};
+
+window.openCourse = (courseId) => {
+  App.currentCourse = App.courses.find(c => c.id === courseId);
+  App.currentView = 'course-detail';
+  App.courseTab = 'overview';
+  render();
+};
 
 function renderCourseDetail() {
-  const c = G.currentCourse;
-  if (!c) return "<p>Course not found</p>";
-  const enrolled = !!G.enrollments[c.id];
+  const c = App.currentCourse;
+  if (!c) return '<p>Course not found</p>';
+  const enrolled = App.enrollments[c.id];
   const totalLessons = c.modules?.reduce((s, m) => s + (m.lessons?.length || 0), 0) || 0;
-  const completedInCourse = Object.keys(G.completedLessons).filter(key => key.startsWith(c.id)).length;
+  const completedInCourse = Object.keys(App.completedLessons).filter(key => key.startsWith(c.id)).length;
   const progress = totalLessons > 0 ? Math.round((completedInCourse / totalLessons) * 100) : 0;
   
   return `
-    <button class="btn btn-secondary btn-sm" onclick="G.view='catalog';render()">← Back to Catalog</button>
+    <button class="btn btn-secondary btn-sm" onclick="changeView('catalog')">← Back to Catalog</button>
     <div style="display:grid;grid-template-columns:1fr 320px;gap:30px;margin-top:20px;">
       <div>
-        <div class="course-thumb" style="background:${c.thumbBg || '#eef2ff'};height:200px;font-size:80px;border-radius:var(--radius-lg);margin-bottom:20px;">${c.thumb || '📚'}</div>
+        <div class="course-thumb" style="height:200px;font-size:80px;background:${c.thumbBg || '#eef2ff'};border-radius:var(--radius-lg);margin-bottom:20px;">${c.thumb || '📚'}</div>
         <h1 style="font-size:28px;margin-bottom:12px;">${c.title}</h1>
-        <p style="color:var(--text-2);margin-bottom:20px;line-height:1.7;">${c.description || 'An exciting course to help you master new skills!'}</p>
-        <div style="display:flex;gap:20px;margin-bottom:30px;flex-wrap:wrap;">
-          <span>👨‍🏫 <strong>${c.instructor || 'Expert Instructor'}</strong></span>
-          <span>📖 <strong>${totalLessons} lessons</strong></span>
-          <span>⭐ <strong>${c.rating || 4.8}</strong> rating</span>
-          <span>⏱️ <strong>${c.duration || '10 hours'}</strong></span>
-        </div>
-        <div class="tabs">
-          <button class="tab ${G.courseTab === 'overview' ? 'active' : ''}" onclick="G.courseTab='overview';render()">Overview</button>
-          <button class="tab ${G.courseTab === 'curriculum' ? 'active' : ''}" onclick="G.courseTab='curriculum';render()">Curriculum</button>
-        </div>
-        <div id="courseTabContent">${G.courseTab === 'overview' ? renderCourseOverview(c) : renderCourseCurriculum(c)}</div>
+        <p style="color:var(--gray);margin-bottom:20px;line-height:1.7;">${c.description || 'An exciting course to master new skills!'}</p>
+        <div style="display:flex;gap:24px;margin-bottom:30px;flex-wrap:wrap;"><span>👨‍🏫 <strong>${c.instructor || 'Expert Instructor'}</strong></span><span>📖 <strong>${totalLessons}</strong> lessons</span><span>⭐ <strong>${c.rating || 4.8}</strong> rating</span><span>⏱️ <strong>${c.duration || '10 hours'}</strong></span></div>
+        <div class="course-tabs"><button class="course-tab ${App.courseTab === 'overview' ? 'active' : ''}" onclick="setCourseTab('overview')">Overview</button><button class="course-tab ${App.courseTab === 'curriculum' ? 'active' : ''}" onclick="setCourseTab('curriculum')">Curriculum</button>${enrolled ? `<button class="course-tab ${App.courseTab === 'notes' ? 'active' : ''}" onclick="setCourseTab('notes')">📝 My Notes</button><button class="course-tab ${App.courseTab === 'discussion' ? 'active' : ''}" onclick="setCourseTab('discussion')">💬 Discussion</button>` : ''}</div>
+        <div id="courseTabContent">${App.courseTab === 'overview' ? renderCourseOverview(c) : App.courseTab === 'curriculum' ? renderCourseCurriculum(c, enrolled, progress) : App.courseTab === 'notes' ? renderCourseNotes(c) : renderCourseDiscussion(c)}</div>
       </div>
-      <div class="card" style="position:sticky;top:80px;">
-        <div style="font-size:36px;font-weight:800;color:var(--brand);margin-bottom:12px;">$${c.price || 49}</div>
-        ${enrolled ? `<div class="course-progress" style="margin:12px 0;"><div class="course-progress-bar" style="width:${progress}%"></div></div><p class="text-center text-muted" style="margin-bottom:12px;">${progress}% complete</p><button class="btn btn-primary w-full" onclick="startFirstLesson('${c.id}')">Continue Learning →</button>` : `<button class="btn btn-primary w-full" onclick="enroll('${c.id}')">Enroll Now</button>`}
-        <div class="divider" style="margin:16px 0;"></div>
-        <div><strong>This course includes:</strong><ul style="margin-top:10px;margin-left:20px;"><li>🎬 ${totalLessons} on-demand lessons</li><li>📝 Practice assignments</li><li>🏆 Certificate of completion</li><li>📱 Mobile access</li></ul></div>
-      </div>
+      <div class="card" style="position:sticky;top:80px;height:fit-content;"><div style="font-size:36px;font-weight:800;color:var(--primary);margin-bottom:16px;">$${c.price || 49}</div>${enrolled ? `<div class="course-progress" style="margin:12px 0;"><div class="course-progress-bar" style="width:${progress}%"></div></div><p class="text-center" style="margin-bottom:16px;">${progress}% complete</p><button class="btn btn-primary w-full" onclick="continueLearning()">Continue Learning →</button>` : `<button class="btn btn-primary w-full" onclick="enrollCourse('${c.id}')">Enroll Now</button>`}<div style="margin-top:20px;"><strong>This course includes:</strong><ul style="margin-top:12px;margin-left:20px;"><li>🎬 ${totalLessons} on-demand lessons</li><li>📝 Practice assignments</li><li>🧠 Interactive quizzes</li><li>🏆 Certificate of completion</li><li>📱 Mobile access</li></ul></div></div>
     </div>
   `;
 }
 
 function renderCourseOverview(c) {
-  return `<div class="card"><h3>About This Course</h3><p>${c.description || 'This comprehensive course will take you from beginner to expert. With hands-on projects and real-world examples, you\'ll gain practical skills that you can apply immediately.'}</p><h3 style="margin-top:20px;">What You'll Learn</h3><ul style="margin-left:20px;"><li>✓ Master core concepts and fundamentals</li><li>✓ Build real-world projects</li><li>✓ Get hands-on experience</li><li>✓ Earn a certificate upon completion</li></ul></div>`;
+  return `<div class="card"><h3>📖 About This Course</h3><p>${c.description || 'This comprehensive course will take you from beginner to expert. With hands-on projects and real-world examples, you\'ll gain practical skills that you can apply immediately.'}</p><h3 style="margin-top:24px;">🎯 What You'll Learn</h3><ul style="margin-left:20px;"><li>✓ Master core concepts and fundamentals</li><li>✓ Build real-world projects</li><li>✓ Get hands-on experience with practical exercises</li><li>✓ Earn a certificate upon completion</li></ul><h3 style="margin-top:24px;">👨‍🏫 Instructor</h3><div style="display:flex;align-items:center;gap:12px;margin-top:12px;"><div class="user-avatar" style="width:48px;height:48px;font-size:20px;">${c.instructorInitials || 'IN'}</div><div><strong>${c.instructor || 'Expert Instructor'}</strong><br><span class="badge badge-info">Course Creator</span></div></div></div>`;
 }
 
-function renderCourseCurriculum(c) {
+function renderCourseCurriculum(c, enrolled, progress) {
+  if (!enrolled) return `<div class="card"><p class="text-center" style="padding:40px">📚 Enroll in this course to access the full curriculum and start learning!</p></div>`;
   return (c.modules || []).map((mod, mi) => `
     <div class="module-item">
-      <div class="module-header"><span class="module-title">📘 Module ${mi+1}: ${mod.title}</span><span class="badge badge-gray">${mod.lessons?.length || 0} lessons</span></div>
-      ${(mod.lessons || []).map(l => `
-        <div class="lesson-item" onclick="startLesson('${c.id}', ${getLessonIndex(c, mi, l)})">
-          <span class="lesson-icon">${l.type === 'video' ? '🎬' : l.type === 'quiz' ? '🧠' : l.type === 'assignment' ? '📝' : '📄'}</span>
-          <span class="lesson-title">${l.title}</span>
-          <span class="lesson-duration">${l.duration || '10 min'}</span>
-          <span class="lesson-type">${l.type || 'video'}</span>
-        </div>
-      `).join('')}
+      <div class="module-header" onclick="toggleModule(${mod.id})"><span class="module-title">📘 Module ${mi+1}: ${mod.title}</span><span>${App.openModules.has(mod.id) ? '▼' : '▶'} (${mod.lessons?.length || 0} lessons)</span></div>
+      <div class="module-lessons ${App.openModules.has(mod.id) ? 'open' : ''}">${(mod.lessons || []).map((l, li) => {
+        const lessonKey = `${c.id}-${getLessonGlobalIndex(c, mi, li)}`;
+        const isCompleted = App.completedLessons[lessonKey];
+        return `<div class="lesson-item ${isCompleted ? 'completed' : ''}" onclick="startLesson('${c.id}', ${getLessonGlobalIndex(c, mi, li)})"><span class="lesson-icon">${l.type === 'video' ? '🎬' : l.type === 'quiz' ? '🧠' : l.type === 'assignment' ? '📝' : '📄'}</span><span class="lesson-title">${l.title}</span><span class="lesson-duration">${l.duration || '10 min'}</span><span class="lesson-type ${l.type}">${l.type || 'video'}</span>${isCompleted ? '<span style="color:var(--success);margin-left:8px;">✓</span>' : ''}</div>`;
+      }).join('')}</div>
     </div>
   `).join('');
 }
 
-function getLessonIndex(course, moduleIdx, lesson) {
+function getLessonGlobalIndex(course, moduleIdx, lessonIdx) {
   let idx = 0;
   for (let i = 0; i < moduleIdx; i++) idx += (course.modules[i]?.lessons?.length || 0);
-  const lessonIdxInModule = (course.modules[moduleIdx]?.lessons || []).findIndex(l => l.id === lesson.id);
-  return idx + lessonIdxInModule;
+  return idx + lessonIdx;
 }
 
-function startFirstLesson(courseId) {
-  const course = G.courses.find(c => c.id === courseId);
-  if (course?.modules?.[0]?.lessons?.[0]) {
-    startLesson(courseId, 0);
+function renderCourseNotes(c) {
+  const courseNotes = App.notes[c.id] || '';
+  return `
+    <div class="card">
+      <div class="card-header"><div class="card-title">📝 My Notes for ${c.title}</div><button class="btn btn-primary btn-sm" onclick="saveNotes('${c.id}')">Save Notes</button></div>
+      <textarea id="notesEditor" class="form-textarea notes-editor" placeholder="Write your notes here... Markdown supported!">${courseNotes}</textarea>
+      <div id="notesPreview" class="notes-preview" style="margin-top:20px;display:none;"></div>
+    </div>
+  `;
+}
+
+window.saveNotes = async (courseId) => {
+  const notes = document.getElementById('notesEditor')?.value;
+  if (notes !== undefined) {
+    App.notes[courseId] = notes;
+    await saveProgress();
+    showToast('Notes saved!');
   }
+};
+
+function renderCourseDiscussion(c) {
+  const courseDiscussions = App.discussions.filter(d => d.courseId === c.id);
+  return `
+    <div class="card">
+      <div class="card-header"><div class="card-title">💬 Course Discussion</div><button class="btn btn-primary btn-sm" onclick="showNewThread('${c.id}')">+ New Thread</button></div>
+      ${courseDiscussions.length ? courseDiscussions.map(t => `<div class="thread-item" onclick="viewThread('${t.id}')"><div class="thread-title">${t.title}</div><div class="thread-meta"><span>${t.author}</span><span>💬 ${t.replies?.length || 0} replies</span><span>${new Date(t.createdAt?.toDate?.() || Date.now()).toLocaleDateString()}</span></div></div>`).join('') : '<p style="text-align:center;padding:40px">No discussions yet. Start the conversation!</p>'}
+    </div>
+  `;
+}
+
+function renderDiscussions() {
+  return `<div class="card"><div class="card-header"><div class="card-title">💬 All Discussions</div><button class="btn btn-primary btn-sm" onclick="showNewThread()">+ New Thread</button></div>${App.discussions.map(t => `<div class="thread-item" onclick="viewThread('${t.id}')"><div class="thread-title">${t.title}</div><div class="thread-meta"><span>${t.author}</span><span>📚 ${App.courses.find(c => c.id === t.courseId)?.title || 'General'}</span><span>💬 ${t.replies?.length || 0} replies</span></div></div>`).join('')}</div>`;
+}
+
+window.showNewThread = (courseId = null) => {
+  openModal('Start New Discussion', `
+    <div class="form-group"><label class="form-label">Title</label><input type="text" id="threadTitle" class="form-input" placeholder="What's your question?"></div>
+    <div class="form-group"><label class="form-label">Course</label><select id="threadCourse" class="form-select"><option value="">General Discussion</option>${App.courses.filter(c => App.enrollments[c.id]).map(c => `<option value="${c.id}">${c.title}</option>`).join('')}</select></div>
+    <div class="form-group"><label class="form-label">Message</label><textarea id="threadMessage" class="form-textarea" rows="5" placeholder="Describe your question or topic..."></textarea></div>
+    <button class="btn btn-primary" onclick="submitThread()">Post Discussion</button>
+  `);
+};
+
+window.submitThread = async () => {
+  const title = document.getElementById('threadTitle')?.value;
+  const courseId = document.getElementById('threadCourse')?.value;
+  const message = document.getElementById('threadMessage')?.value;
+  if (!title || !message) { showToast('Please fill all fields', 'error'); return; }
+  await addDiscussion({
+    title, courseId: courseId || null, message, author: App.user.name,
+    authorId: App.user.id, replies: [], createdAt: new Date()
+  });
+  closeModal();
+};
+
+window.viewThread = (threadId) => {
+  const thread = App.discussions.find(t => t.id === threadId);
+  if (!thread) return;
+  openModal(thread.title, `
+    <div style="margin-bottom:24px;"><strong>${thread.author}</strong> · ${new Date(thread.createdAt?.toDate?.() || Date.now()).toLocaleString()}</div>
+    <div style="margin-bottom:24px;padding:16px;background:var(--light);border-radius:var(--radius);">${thread.message}</div>
+    <h4>Replies (${thread.replies?.length || 0})</h4>
+    ${(thread.replies || []).map(r => `<div style="margin:12px 0;padding:12px;background:var(--light);border-radius:var(--radius);"><strong>${r.author}</strong> · ${new Date(r.createdAt?.toDate?.() || Date.now()).toLocaleString()}<br>${r.message}</div>`).join('')}
+    <textarea id="replyMessage" class="form-textarea" rows="3" placeholder="Write a reply..."></textarea>
+    <button class="btn btn-primary" style="margin-top:12px" onclick="submitReply('${threadId}')">Post Reply</button>
+  `);
+};
+
+window.submitReply = async (threadId) => {
+  const message = document.getElementById('replyMessage')?.value;
+  if (!message) { showToast('Please enter a reply', 'error'); return; }
+  await addReply(threadId, { author: App.user.name, authorId: App.user.id, message, createdAt: new Date() });
+  closeModal();
+};
+
+function renderCertificates() {
+  const earned = App.courses.filter(c => App.enrollments[c.id] && Object.keys(App.completedLessons).filter(k => k.startsWith(c.id)).length > (c.modules?.reduce((s,m)=>s+(m.lessons?.length||0),0) || 0) * 0.8);
+  return `<div class="card"><div class="card-header"><div class="card-title">🏆 Your Certificates</div></div>${earned.length ? earned.map(c => `<div style="padding:24px;border:1px solid var(--border);border-radius:var(--radius);margin-bottom:16px;text-align:center"><div style="font-size:64px;margin-bottom:16px;">🎓</div><h3>Certificate of Completion</h3><p>This certifies that</p><h2>${App.user.name}</h2><p>has successfully completed</p><h3>${c.title}</h3><p>Issued: ${new Date().toLocaleDateString()}</p><button class="btn btn-primary" style="margin-top:16px" onclick="showToast('Certificate downloaded!')">Download PDF</button></div>`).join('') : '<p style="text-align:center;padding:60px">Complete courses to earn certificates!</p>'}</div>`;
+}
+
+function continueLearning() {
+  const c = App.currentCourse;
+  const allLessons = [];
+  c.modules?.forEach(m => { m.lessons?.forEach(l => allLessons.push(l)); });
+  const firstIncomplete = allLessons.findIndex((_, idx) => !App.completedLessons[`${c.id}-${idx}`]);
+  startLesson(c.id, firstIncomplete === -1 ? 0 : firstIncomplete);
 }
 
 function startLesson(courseId, lessonIndex) {
-  G.currentCourse = G.courses.find(c => c.id === courseId);
+  App.currentCourse = App.courses.find(c => c.id === courseId);
   const allLessons = [];
-  G.currentCourse.modules?.forEach(m => { m.lessons?.forEach(l => allLessons.push(l)); });
-  G.currentLesson = { lessons: allLessons, idx: lessonIndex };
+  App.currentCourse.modules?.forEach(m => { m.lessons?.forEach(l => allLessons.push(l)); });
+  App.currentLesson = { lessons: allLessons, idx: lessonIndex, courseId: App.currentCourse.id };
   const lesson = allLessons[lessonIndex];
-  if (lesson?.type === 'quiz') { startQuiz(lesson); return; }
-  if (lesson?.type === 'assignment') { G.view = 'assignments'; render(); return; }
-  G.view = "lesson";
-  render();
+  if (lesson?.type === 'quiz') startQuiz(lesson);
+  else if (lesson?.type === 'assignment') { App.currentView = 'assignments'; render(); }
+  else { App.currentView = 'lesson'; render(); }
 }
 
-function renderLesson() {
-  const lesson = G.currentLesson?.lessons[G.currentLesson.idx];
-  if (!lesson) return "<p>Lesson not found</p>";
-  const isCompleted = G.completedLessons[`${G.currentCourse.id}-${G.currentLesson.idx}`];
+function renderLessonContent() {
+  const lesson = App.currentLesson?.lessons[App.currentLesson.idx];
+  if (!lesson) return '<p>Lesson not found</p>';
+  const isCompleted = App.completedLessons[`${App.currentCourse.id}-${App.currentLesson.idx}`];
+  const nextLesson = App.currentLesson.idx + 1 < App.currentLesson.lessons.length;
+  
   return `
-    <div class="card">
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
-        <button class="btn btn-secondary btn-sm" onclick="G.view='course-detail';render()">← Back to Course</button>
-        ${isCompleted ? '<span class="badge badge-success">✅ Completed</span>' : ''}
-      </div>
-      <div style="text-align:center;padding:40px;background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);border-radius:var(--radius-lg);color:white;margin-bottom:20px;">
-        <div style="font-size:64px;margin-bottom:16px;">${lesson.type === 'video' ? '🎬' : '📖'}</div>
-        <h2 style="font-size:24px;margin-bottom:12px;">${lesson.title}</h2>
-        <p>Duration: ${lesson.duration || '15 min'}</p>
-      </div>
-      <div class="text-center" style="padding:20px;">
-        <p style="margin-bottom:30px;color:var(--text-2);">${lesson.description || 'This lesson covers important concepts. Watch the video and complete the activities to master the topic.'}</p>
-        ${!isCompleted ? `<button class="btn btn-primary" onclick="completeLesson()">✅ Mark Complete & Continue</button>` : `<button class="btn btn-primary" onclick="nextLesson()">Next Lesson →</button>`}
+    <div class="lesson-view">
+      <button class="btn btn-secondary btn-sm" onclick="backToCourse()">← Back to Course</button>
+      <div class="card" style="margin-top:20px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;"><h2>${lesson.title}</h2>${isCompleted ? '<span class="badge badge-success">✓ Completed</span>' : ''}</div>
+        ${lesson.type === 'video' ? `
+          <div class="video-container"><iframe src="https://www.youtube.com/embed/dQw4w9WgXcQ" frameborder="0" allowfullscreen></iframe></div>
+          <div class="markdown-content">${marked.parse(lesson.content || 'No content available for this lesson.')}</div>
+        ` : lesson.type === 'pdf' ? `
+          <div class="pdf-viewer"><iframe src="${lesson.pdfUrl || '#'}" width="100%" height="600px" frameborder="0"></iframe></div>
+        ` : `
+          <div class="markdown-content">${marked.parse(lesson.content || 'No content available for this lesson.')}</div>
+        `}
+        <div style="display:flex;justify-content:space-between;margin-top:30px;">
+          <button class="btn btn-secondary" onclick="previousLesson()" ${App.currentLesson.idx === 0 ? 'disabled' : ''}>← Previous</button>
+          ${!isCompleted ? `<button class="btn btn-primary" onclick="markLessonComplete()">✓ Mark Complete</button>` : nextLesson ? `<button class="btn btn-primary" onclick="nextLesson()">Next Lesson →</button>` : `<button class="btn btn-success" onclick="backToCourse()">🎉 Complete Course →</button>`}
+        </div>
       </div>
     </div>
   `;
 }
 
-function completeLesson() {
-  const key = `${G.currentCourse.id}-${G.currentLesson.idx}`;
-  if (!G.completedLessons[key]) {
-    G.completedLessons[key] = true;
-    G.user.points = (G.user.points || 0) + 10;
-    saveUserProgress();
-    toast("🎉 Lesson completed! +10 XP", "success");
+function markLessonComplete() {
+  const key = `${App.currentCourse.id}-${App.currentLesson.idx}`;
+  if (!App.completedLessons[key]) {
+    App.completedLessons[key] = true;
+    App.user.points = (App.user.points || 0) + 10;
+    saveProgress();
+    showToast('🎉 Lesson completed! +10 XP', 'success');
   }
   nextLesson();
 }
 
-function nextLesson() {
-  if (G.currentLesson.idx + 1 < G.currentLesson.lessons.length) {
-    G.currentLesson.idx++;
-    render();
-  } else {
-    toast("🏆 Course completed! Certificate earned!", "success");
-    G.view = "course-detail";
-    render();
-  }
-}
+function previousLesson() { if (App.currentLesson.idx > 0) { App.currentLesson.idx--; render(); } }
+function nextLesson() { if (App.currentLesson.idx + 1 < App.currentLesson.lessons.length) { App.currentLesson.idx++; render(); } else { showToast('🏆 Course completed! Certificate earned!', 'success'); backToCourse(); } }
+function backToCourse() { App.currentView = 'course-detail'; render(); }
 
 function startQuiz(lesson) {
-  G.quizState = { questions: getQuizQuestions(lesson), current: 0, answers: {}, score: 0, finished: false };
-  G.view = "quiz";
+  App.quizState = {
+    questions: lesson.quizQuestions || [
+      { text: "What is the main topic of this lesson?", options: ["Option A", "Option B", "Option C", "Option D"], correct: 0, points: 10 },
+      { text: "Which of the following is true?", options: ["Statement 1", "Statement 2", "Statement 3", "Statement 4"], correct: 1, points: 10 },
+      { text: "True or False: This is an important concept.", type: "tf", correct: true, points: 10 }
+    ],
+    current: 0, answers: {}, score: 0, finished: false, lessonId: lesson.id
+  };
+  App.currentView = 'quiz';
   render();
 }
 
-function getQuizQuestions(lesson) {
-  return [
-    { text: "What is the primary purpose of this lesson?", options: ["Learn fundamentals", "Practice skills", "Test knowledge", "All of above"], correct: 3, points: 10 },
-    { text: "Which of the following is true about this topic?", options: ["Option A", "Option B", "Option C", "Option D"], correct: 0, points: 10 },
-    { text: "True or False: Practice is important for mastery.", type: "tf", correct: true, points: 10 }
-  ];
-}
-
 function renderQuiz() {
-  if (!G.quizState || G.quizState.finished) return renderQuizResults();
-  const q = G.quizState.questions[G.quizState.current];
+  if (!App.quizState || App.quizState.finished) return renderQuizResults();
+  const q = App.quizState.questions[App.quizState.current];
   return `
     <div class="card" style="max-width:700px;margin:0 auto;">
-      <div class="section-header"><div><span class="badge badge-brand">Question ${G.quizState.current+1}/${G.quizState.questions.length}</span></div><div class="badge badge-gray">${q.points} points</div></div>
-      <h3 style="margin:20px 0;font-size:20px;">${q.text}</h3>
-      ${q.options ? q.options.map((opt, i) => `<div class="quiz-option ${G.quizState.answers[G.quizState.current] === i ? 'selected' : ''}" onclick="selectQuizAnswer(${i})">${String.fromCharCode(65+i)}. ${opt}</div>`).join('') : `
-        <div style="display:flex;gap:12px;"><button class="btn ${G.quizState.answers[G.quizState.current] === true ? 'btn-primary' : 'btn-secondary'}" onclick="selectQuizAnswer(true)">✓ True</button><button class="btn ${G.quizState.answers[G.quizState.current] === false ? 'btn-primary' : 'btn-secondary'}" onclick="selectQuizAnswer(false)">✗ False</button></div>
+      <div class="card-header"><div><span class="badge badge-info">Question ${App.quizState.current+1}/${App.quizState.questions.length}</span></div><div class="badge badge-success">${q.points} points</div></div>
+      <h3 class="quiz-question-text">${q.text}</h3>
+      ${q.options ? q.options.map((opt, i) => `<div class="quiz-option ${App.quizState.answers[App.quizState.current] === i ? 'selected' : ''}" onclick="selectQuizAnswer(${i})">${String.fromCharCode(65+i)}. ${opt}</div>`).join('') : `
+        <div style="display:flex;gap:12px;"><button class="btn ${App.quizState.answers[App.quizState.current] === true ? 'btn-primary' : 'btn-secondary'}" onclick="selectQuizAnswer(true)">✓ True</button><button class="btn ${App.quizState.answers[App.quizState.current] === false ? 'btn-primary' : 'btn-secondary'}" onclick="selectQuizAnswer(false)">✗ False</button></div>
       `}
-      <div style="display:flex;justify-content:space-between;margin-top:30px;">
-        <button class="btn btn-secondary" onclick="prevQuestion()" ${G.quizState.current === 0 ? 'disabled' : ''}>← Previous</button>
-        <button class="btn btn-primary" onclick="nextQuestion()">${G.quizState.current === G.quizState.questions.length-1 ? 'Submit Quiz' : 'Next →'}</button>
-      </div>
+      <div style="display:flex;justify-content:space-between;margin-top:30px;"><button class="btn btn-secondary" onclick="prevQuizQuestion()" ${App.quizState.current === 0 ? 'disabled' : ''}>← Previous</button><button class="btn btn-primary" onclick="nextQuizQuestion()">${App.quizState.current === App.quizState.questions.length-1 ? 'Submit Quiz' : 'Next →'}</button></div>
     </div>
   `;
 }
 
-function selectQuizAnswer(answer) { G.quizState.answers[G.quizState.current] = answer; render(); }
-function prevQuestion() { if (G.quizState.current > 0) { G.quizState.current--; render(); } }
-function nextQuestion() {
-  if (G.quizState.current === G.quizState.questions.length - 1) finishQuiz();
-  else { G.quizState.current++; render(); }
-}
+window.selectQuizAnswer = (answer) => { App.quizState.answers[App.quizState.current] = answer; render(); };
+window.prevQuizQuestion = () => { if (App.quizState.current > 0) { App.quizState.current--; render(); } };
+window.nextQuizQuestion = () => { if (App.quizState.current === App.quizState.questions.length-1) finishQuiz(); else { App.quizState.current++; render(); } };
 
 function finishQuiz() {
   let total = 0;
-  G.quizState.questions.forEach((q, i) => {
-    const ans = G.quizState.answers[i];
+  App.quizState.questions.forEach((q, i) => {
+    const ans = App.quizState.answers[i];
     if (q.correct !== undefined && ans === q.correct) total += q.points;
     else if (q.correct === undefined && ans !== undefined) total += Math.floor(q.points * 0.7);
   });
-  G.quizState.score = total;
-  G.quizState.finished = true;
-  G.user.points = (G.user.points || 0) + total;
-  saveUserProgress();
+  App.quizState.score = total;
+  App.quizState.finished = true;
+  App.user.points = (App.user.points || 0) + total;
+  saveProgress();
   render();
 }
 
 function renderQuizResults() {
-  const pass = G.quizState.score >= 20;
-  return `
-    <div class="card text-center" style="max-width:500px;margin:0 auto;">
-      <div style="font-size:64px;margin-bottom:16px;">${pass ? '🎉' : '📚'}</div>
-      <h2>Quiz Complete!</h2>
-      <div style="font-size:48px;font-weight:800;color:${pass ? 'var(--success)' : 'var(--warn)'};margin:20px 0;">${G.quizState.score} pts</div>
-      <p class="text-muted" style="margin-bottom:20px;">You earned ${G.quizState.score} XP points!</p>
-      <button class="btn btn-primary" onclick="G.view='course-detail';render()">Back to Course</button>
-    </div>
-  `;
+  const pass = App.quizState.score >= (App.quizState.questions.reduce((s,q)=>s+q.points,0) * 0.6);
+  return `<div class="card text-center" style="max-width:500px;margin:0 auto;"><div style="font-size:64px;margin-bottom:16px;">${pass ? '🎉' : '📚'}</div><h2>Quiz Complete!</h2><div style="font-size:48px;font-weight:800;color:${pass ? 'var(--success)' : 'var(--warning)'};margin:20px 0;">${App.quizState.score} / ${App.quizState.questions.reduce((s,q)=>s+q.points,0)} pts</div><p class="text-muted">You earned ${App.quizState.score} XP points!</p><button class="btn btn-primary" onclick="backToCourse()">Back to Course</button></div>`;
 }
-
-function renderAssignments() { return `<div class="card"><h3>📝 Assignments</h3><p class="text-muted">Complete assignments to earn bonus XP!</p><div class="text-center" style="padding:40px;">🎯 No pending assignments. Great job!</div></div>`; }
-function renderAnalytics() { return `<div class="card"><h3>📊 Learning Analytics</h3><div class="stats-row"><div class="stat-card"><div class="stat-num">${Object.keys(G.completedLessons).length}</div><div class="stat-label">Lessons Done</div></div><div class="stat-card"><div class="stat-num">${G.user?.points || 0}</div><div class="stat-label">Total XP</div></div></div></div>`; }
-function renderCertificates() { const earned = G.courses.filter(c => G.enrollments[c.id] && Object.keys(G.completedLessons).filter(k => k.startsWith(c.id)).length > 0); return `<div class="card"><h3>🏆 Your Certificates</h3>${earned.length ? earned.map(c => `<div class="card-sm" style="margin-bottom:12px;"><div>🎓 ${c.title}</div><div class="text-muted">Completed: ${new Date().toLocaleDateString()}</div><button class="btn btn-primary btn-sm mt-2" onclick="toast('Certificate downloaded!','success')">Download PDF</button></div>`).join('') : '<p class="text-center" style="padding:40px;">Complete courses to earn certificates!</p>'}</div>`; }
-
-function enroll(courseId) { G.enrollments[courseId] = true; saveUserProgress(); toast("Enrolled successfully! 🎉", "success"); render(); }
 
 // ============================================
-// ADMIN VIEWS
+// ADMIN FUNCTIONS
 // ============================================
-function renderAdmin() {
-  const students = G.users.filter(u => u.role === "student");
-  const pending = students.filter(u => u.status === "pending");
-  const totalRevenue = G.courses.reduce((sum, c) => sum + (c.students || 0) * (c.price || 49), 0);
-  return `
-    <div class="stats-row">
-      <div class="stat-card"><div class="stat-num">${students.length}</div><div class="stat-label">Total Students</div><div class="stat-trend">👥 Active learners</div></div>
-      <div class="stat-card"><div class="stat-num" style="color:var(--warn)">${pending.length}</div><div class="stat-label">Pending Approvals</div><div class="stat-trend">⏳ Awaiting action</div></div>
-      <div class="stat-card"><div class="stat-num">${G.courses.length}</div><div class="stat-label">Total Courses</div><div class="stat-trend">📚 Published</div></div>
-      <div class="stat-card"><div class="stat-num">$${totalRevenue.toLocaleString()}</div><div class="stat-label">Revenue</div><div class="stat-trend">💰 Estimated</div></div>
-    </div>
-    <div class="tabs">
-      <button class="tab ${G.adminTab === 'overview' ? 'active' : ''}" onclick="G.adminTab='overview';render()">📊 Overview</button>
-      <button class="tab ${G.adminTab === 'courses' ? 'active' : ''}" onclick="G.adminTab='courses';render()">📚 Manage Courses</button>
-      <button class="tab ${G.adminTab === 'users' ? 'active' : ''}" onclick="G.adminTab='users';render()">👥 Manage Users</button>
-      <button class="tab ${G.adminTab === 'add-course' ? 'active' : ''}" onclick="G.adminTab='add-course';render()">➕ Add Course</button>
-    </div>
-    <div id="adminContent">${renderAdminContent()}</div>
-  `;
-}
-
-function renderAdminContent() {
-  if (G.adminTab === 'overview') return `<div class="card"><h3>📊 Platform Overview</h3><p>Welcome to the admin dashboard. Manage courses, approve students, and track platform growth.</p><div class="stats-row" style="margin-top:20px;"><div class="stat-card"><div class="stat-num">${G.courses.reduce((s,c) => s + (c.modules?.length || 0), 0)}</div><div class="stat-label">Modules</div></div><div class="stat-card"><div class="stat-num">${G.courses.reduce((s,c) => s + (c.modules?.reduce((ss,m) => ss + (m.lessons?.length || 0), 0) || 0), 0)}</div><div class="stat-label">Total Lessons</div></div></div></div>`;
-  if (G.adminTab === 'courses') return renderAdminCourses();
-  if (G.adminTab === 'users') return renderAdminUsers();
-  if (G.adminTab === 'add-course') return renderAddCourseForm();
-  return '';
-}
-
-function renderAdminCourses() {
-  return `
-    <div class="card">
-      <div class="section-header"><div class="section-title">📚 All Courses</div><button class="btn btn-primary btn-sm" onclick="G.adminTab='add-course';render()">+ Add New Course</button></div>
-      <div class="table-wrapper">
-        <table class="data-table">
-          <thead><tr><th>Course</th><th>Category</th><th>Price</th><th>Students</th><th>Lessons</th><th>Actions</th></tr></thead>
-          <tbody>${G.courses.map(c => `
-            <tr><td><strong>${c.title}</strong></td><td>${c.category || 'General'}</td><td>$${c.price || 49}</td><td>${c.students || 0}</td><td>${c.modules?.reduce((s,m) => s + (m.lessons?.length || 0), 0) || 0}</td>
-            <td class="actions-cell"><button class="btn btn-primary btn-sm" onclick="editCourse('${c.id}')">✏️ Edit</button><button class="btn btn-secondary btn-sm" onclick="manageModules('${c.id}')">📦 Modules</button><button class="btn btn-danger btn-sm" onclick="deleteCourse('${c.id}')">🗑️ Delete</button></td></tr>
-          `).join('')}</tbody>
-        </table>
+function renderAdminDashboard() {
+  const students = App.users.filter(u => u.role === 'student');
+  const pending = students.filter(u => u.status === 'pending');
+  const totalRevenue = App.courses.reduce((sum, c) => sum + ((c.students || 0) * (c.price || 49)), 0);
+  
+  const html = `
+    <div class="app">
+      <div class="sidebar">
+        <div class="sidebar-header"><h2>🎓 LearnFlow Pro</h2></div>
+        <div class="sidebar-nav"><div class="nav-item ${App.adminTab === 'overview' ? 'active' : ''}" onclick="setAdminTab('overview')"><span class="nav-icon">📊</span> Overview</div><div class="nav-item ${App.adminTab === 'courses' ? 'active' : ''}" onclick="setAdminTab('courses')"><span class="nav-icon">📚</span> Courses</div><div class="nav-item ${App.adminTab === 'users' ? 'active' : ''}" onclick="setAdminTab('users')"><span class="nav-icon">👥</span> Users</div><div class="nav-item ${App.adminTab === 'add-course' ? 'active' : ''}" onclick="setAdminTab('add-course')"><span class="nav-icon">➕</span> Add Course</div></div>
+        <div class="user-section" style="display:flex;align-items:center;gap:12px"><div class="user-avatar">${App.user.name?.charAt(0) || 'A'}</div><div class="user-info"><div class="user-name">${App.user.name}</div><div class="user-role">Administrator</div></div><button class="btn btn-secondary btn-sm" onclick="logout()">Logout</button></div>
       </div>
+      <div class="main"><div class="top-bar"><h1 class="page-title">Admin Dashboard</h1></div><div class="content" id="adminContent"></div></div>
     </div>
   `;
+  document.getElementById('root').innerHTML = html;
+  renderAdminContent(students, pending, totalRevenue);
 }
 
-function editCourse(courseId) {
-  const course = G.courses.find(c => c.id === courseId);
-  if (!course) return;
-  openModal("Edit Course", `
-    <div class="form-group"><label class="form-label">Course Title</label><input class="form-input" id="editTitle" value="${course.title.replace(/"/g, '&quot;')}"></div>
-    <div class="form-group"><label class="form-label">Category</label><input class="form-input" id="editCategory" value="${course.category || 'General'}"></div>
-    <div class="form-group"><label class="form-label">Description</label><textarea class="form-textarea" id="editDescription">${course.description || ''}</textarea></div>
-    <div class="form-row"><div class="form-group"><label class="form-label">Duration</label><input class="form-input" id="editDuration" value="${course.duration || '10 hours'}"></div><div class="form-group"><label class="form-label">Price</label><input class="form-input" id="editPrice" type="number" value="${course.price || 49}"></div></div>
-    <div class="form-group"><label class="form-label">Level</label><select class="form-select" id="editLevel"><option ${course.level === 'Beginner' ? 'selected' : ''}>Beginner</option><option ${course.level === 'Intermediate' ? 'selected' : ''}>Intermediate</option><option ${course.level === 'Advanced' ? 'selected' : ''}>Advanced</option></select></div>
-    <div class="form-group"><label class="form-label">Icon (emoji)</label><input class="form-input" id="editThumb" value="${course.thumb || '📚'}"></div>
-    <div class="flex gap-2 mt-4"><button class="btn btn-primary" onclick="saveCourseEdit('${courseId}')">Save Changes</button><button class="btn btn-secondary" onclick="closeModal()">Cancel</button></div>
-  `);
-}
-
-function saveCourseEdit(courseId) {
-  updateCourse(courseId, {
-    title: document.getElementById("editTitle")?.value,
-    category: document.getElementById("editCategory")?.value,
-    description: document.getElementById("editDescription")?.value,
-    duration: document.getElementById("editDuration")?.value,
-    price: parseInt(document.getElementById("editPrice")?.value) || 49,
-    level: document.getElementById("editLevel")?.value,
-    thumb: document.getElementById("editThumb")?.value
-  });
-  closeModal();
-}
-
-function manageModules(courseId) {
-  const course = G.courses.find(c => c.id === courseId);
-  if (!course) return;
-  openModal(`Manage Modules: ${course.title}`, `
-    <div id="modulesList">${(course.modules || []).map((mod, idx) => `
-      <div class="module-item" style="margin-bottom:12px;">
-        <div class="module-header"><span class="module-title">📘 Module ${idx+1}: ${mod.title}</span><div><button class="btn btn-sm btn-secondary" onclick="editModule('${courseId}', '${mod.id}')">✏️</button><button class="btn btn-sm btn-danger" onclick="deleteModuleConfirm('${courseId}', '${mod.id}')">🗑️</button></div></div>
-        ${(mod.lessons || []).map(lesson => `<div style="padding:10px 20px 10px 40px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;"><span>${lesson.type === 'video' ? '🎬' : lesson.type === 'quiz' ? '🧠' : '📝'} ${lesson.title}</span><div><button class="btn btn-sm btn-secondary" onclick="editLesson('${courseId}', '${mod.id}', '${lesson.id}')">✏️</button><button class="btn btn-sm btn-danger" onclick="deleteLessonConfirm('${courseId}', '${mod.id}', '${lesson.id}')">🗑️</button></div></div>`).join('')}
-        <div style="padding:12px 20px;"><button class="btn btn-sm btn-primary" onclick="addLessonForm('${courseId}', '${mod.id}')">+ Add Lesson</button></div>
-      </div>
-    `).join('')}</div>
-    <div style="margin-top:20px;"><button class="btn btn-primary" onclick="addModuleForm('${courseId}')">+ Add New Module</button></div>
-    <div style="margin-top:16px;"><button class="btn btn-secondary" onclick="closeModal()">Close</button></div>
-  `);
-}
-
-function addModuleForm(courseId) {
-  const title = prompt("Enter module title:");
-  if (title) addModule(courseId, { title });
-  closeModal();
-  manageModules(courseId);
-}
-
-function editModule(courseId, moduleId) {
-  const course = G.courses.find(c => c.id === courseId);
-  const module = course?.modules?.find(m => m.id == moduleId);
-  if (!module) return;
-  const newTitle = prompt("Edit module title:", module.title);
-  if (newTitle && newTitle !== module.title) updateModule(courseId, moduleId, { title: newTitle });
-  manageModules(courseId);
-}
-
-function deleteModuleConfirm(courseId, moduleId) {
-  if (confirm("Delete this module and all its lessons?")) deleteModule(courseId, moduleId);
-  manageModules(courseId);
-}
-
-function addLessonForm(courseId, moduleId) {
-  openModal("Add Lesson", `
-    <div class="form-group"><label class="form-label">Lesson Title</label><input class="form-input" id="lessonTitle" placeholder="Lesson title"></div>
-    <div class="form-group"><label class="form-label">Type</label><select class="form-select" id="lessonType"><option value="video">Video</option><option value="quiz">Quiz</option><option value="assignment">Assignment</option></select></div>
-    <div class="form-group"><label class="form-label">Duration</label><input class="form-input" id="lessonDuration" placeholder="e.g., 15 min"></div>
-    <div class="form-group"><label class="form-label">Description (optional)</label><textarea class="form-textarea" id="lessonDescription" placeholder="What will students learn?"></textarea></div>
-    <div class="flex gap-2 mt-4"><button class="btn btn-primary" onclick="saveLesson('${courseId}', '${moduleId}')">Add Lesson</button><button class="btn btn-secondary" onclick="closeModal()">Cancel</button></div>
-  `);
-}
-
-function saveLesson(courseId, moduleId) {
-  addLesson(courseId, moduleId, {
-    title: document.getElementById("lessonTitle")?.value,
-    type: document.getElementById("lessonType")?.value,
-    duration: document.getElementById("lessonDuration")?.value,
-    description: document.getElementById("lessonDescription")?.value || ""
-  });
-  closeModal();
-  manageModules(courseId);
-}
-
-function editLesson(courseId, moduleId, lessonId) {
-  const course = G.courses.find(c => c.id === courseId);
-  const lesson = course?.modules?.find(m => m.id == moduleId)?.lessons?.find(l => l.id == lessonId);
-  if (!lesson) return;
-  openModal("Edit Lesson", `
-    <div class="form-group"><label class="form-label">Lesson Title</label><input class="form-input" id="lessonTitle" value="${lesson.title.replace(/"/g, '&quot;')}"></div>
-    <div class="form-group"><label class="form-label">Type</label><select class="form-select" id="lessonType"><option ${lesson.type === 'video' ? 'selected' : ''} value="video">Video</option><option ${lesson.type === 'quiz' ? 'selected' : ''} value="quiz">Quiz</option><option ${lesson.type === 'assignment' ? 'selected' : ''} value="assignment">Assignment</option></select></div>
-    <div class="form-group"><label class="form-label">Duration</label><input class="form-input" id="lessonDuration" value="${lesson.duration || ''}"></div>
-    <div class="form-group"><label class="form-label">Description</label><textarea class="form-textarea" id="lessonDescription">${lesson.description || ''}</textarea></div>
-    <div class="flex gap-2"><button class="btn btn-primary" onclick="updateLessonSave('${courseId}', '${moduleId}', '${lessonId}')">Save</button><button class="btn btn-secondary" onclick="closeModal()">Cancel</button></div>
-  `);
-}
-
-function updateLessonSave(courseId, moduleId, lessonId) {
-  updateLesson(courseId, moduleId, lessonId, {
-    title: document.getElementById("lessonTitle")?.value,
-    type: document.getElementById("lessonType")?.value,
-    duration: document.getElementById("lessonDuration")?.value,
-    description: document.getElementById("lessonDescription")?.value
-  });
-  closeModal();
-  manageModules(courseId);
-}
-
-function deleteLessonConfirm(courseId, moduleId, lessonId) {
-  if (confirm("Delete this lesson?")) deleteLesson(courseId, moduleId, lessonId);
-  manageModules(courseId);
-}
-
-function renderAdminUsers() {
-  const students = G.users.filter(u => u.role === "student");
-  const pending = students.filter(u => u.status === "pending");
-  return `
-    ${pending.length ? `<div class="card"><h3>⏳ Pending Approvals (${pending.length})</h3><div class="table-wrapper"><table class="data-table"><thead><tr><th>Name</th><th>Email</th><th>Registered</th><th>Action</th></tr></thead><tbody>${pending.map(u => `<tr><td>${u.name}</td><td>${u.email}</td><td>${new Date(u.createdAt?.toDate?.() || Date.now()).toLocaleDateString()}</td><td class="actions-cell"><button class="btn btn-success btn-sm" onclick="approveUser('${u.id}')">✅ Approve</button><button class="btn btn-danger btn-sm" onclick="rejectUser('${u.id}')">❌ Reject</button></td>`).join('')}</tbody></table></div></div>` : ''}
-    <div class="card"><h3>👥 All Students (${students.length})</h3><div class="table-wrapper"><table class="data-table"><thead><tr><th>Name</th><th>Email</th><th>Status</th><th>XP Points</th><th>Enrolled</th></thead><tbody>${students.map(u => `<tr><td>${u.name}</td><td>${u.email}</td><td><span class="badge ${u.status === 'approved' ? 'badge-success' : 'badge-warn'}">${u.status}</span></td><td>${u.points || 0}</td><td>${Object.keys(G.enrollments).filter(cid => G.enrollments[cid] && G.users.find(s => s.id === u.id)).length || 0}</td>`).join('')}</tbody></table></div></div>
-  `;
-}
-
-function renderAddCourseForm() {
-  return `
-    <div class="card">
-      <h3>➕ Create New Course</h3>
-      <form id="addCourseForm">
-        <div class="form-group"><label class="form-label">Course Title *</label><input class="form-input" id="courseTitle" required placeholder="e.g., Advanced JavaScript"></div>
-        <div class="form-row"><div class="form-group"><label class="form-label">Category</label><input class="form-input" id="courseCategory" value="Development"></div><div class="form-group"><label class="form-label">Level</label><select class="form-select" id="courseLevel"><option>Beginner</option><option>Intermediate</option><option>Advanced</option></select></div></div>
-        <div class="form-group"><label class="form-label">Description</label><textarea class="form-textarea" id="courseDescription" placeholder="What will students learn?"></textarea></div>
-        <div class="form-row"><div class="form-group"><label class="form-label">Duration</label><input class="form-input" id="courseDuration" placeholder="e.g., 20 hours"></div><div class="form-group"><label class="form-label">Price ($)</label><input class="form-input" id="coursePrice" type="number" value="49"></div></div>
-        <div class="form-row"><div class="form-group"><label class="form-label">Icon (emoji)</label><input class="form-input" id="courseThumb" value="📚"></div><div class="form-group"><label class="form-label">Background Color</label><input class="form-input" id="courseThumbBg" value="#eef2ff" type="color"></div></div>
-        <div class="flex gap-2"><button type="submit" class="btn btn-primary">✨ Create Course</button><button type="button" class="btn btn-secondary" onclick="G.adminTab='courses';render()">Cancel</button></div>
-      </form>
-    </div>
-  `;
-}
-
-function bindAdminEvents() {
-  const form = document.getElementById("addCourseForm");
-  if (form) {
-    form.onsubmit = async (e) => {
+function renderAdminContent(students, pending, totalRevenue) {
+  const container = document.getElementById('adminContent');
+  if (App.adminTab === 'overview') {
+    container.innerHTML = `<div class="stats-grid"><div class="stat-card"><div class="stat-number">${students.length}</div><div class="stat-label">Total Students</div></div><div class="stat-card"><div class="stat-number" style="color:var(--warning)">${pending.length}</div><div class="stat-label">Pending Approvals</div></div><div class="stat-card"><div class="stat-number">${App.courses.length}</div><div class="stat-label">Total Courses</div></div><div class="stat-card"><div class="stat-number">$${totalRevenue.toLocaleString()}</div><div class="stat-label">Est. Revenue</div></div></div><div class="card"><div class="card-header"><div class="card-title">📊 Platform Insights</div></div><p>Welcome to your admin dashboard. Here you can manage courses, approve students, and track platform growth.</p><div style="margin-top:20px;display:grid;grid-template-columns:repeat(2,1fr);gap:20px;"><div><strong>📈 Quick Stats</strong><ul style="margin-top:10px;margin-left:20px;"><li>✅ ${students.length} registered students</li><li>📚 ${App.courses.length} published courses</li><li>⭐ ${(App.courses.reduce((s,c)=>s+(c.rating||0),0)/App.courses.length || 0).toFixed(1)} average rating</li><li>🎓 ${students.reduce((s,u)=>s+Object.keys(u.completedLessons||{}).length,0)} lessons completed</li></ul></div><div><strong>🎯 Recent Activity</strong><ul style="margin-top:10px;margin-left:20px;"><li>📝 ${pending.length} students waiting for approval</li><li>➕ ${App.courses.filter(c => new Date(c.createdAt?.toDate?.() || 0) > new Date(Date.now()-7*86400000)).length} new courses this week</li><li>👥 ${students.filter(s => new Date(s.createdAt?.toDate?.() || 0) > new Date(Date.now()-7*86400000)).length} new students this week</li></ul></div></div></div>`;
+  } else if (App.adminTab === 'courses') {
+    container.innerHTML = `<div class="card"><div class="card-header"><div class="card-title">📚 Course Management</div><button class="btn btn-primary btn-sm" onclick="setAdminTab('add-course')">+ Add New Course</button></div><div class="table-wrapper"><table class="data-table"><thead><tr><th>Course</th><th>Category</th><th>Price</th><th>Students</th><th>Modules</th><th>Lessons</th><th>Actions</th></tr></thead><tbody>${App.courses.map(c => `<tr><td><strong>${c.title}</strong><br><small>${c.level || 'Beginner'}</small></td><td>${c.category || 'General'}</td><td>$${c.price || 49}</td><td>${c.students || 0}</td><td>${c.modules?.length || 0}</td><td>${c.modules?.reduce((s,m)=>s+(m.lessons?.length||0),0) || 0}</td><td><button class="btn btn-secondary btn-sm" onclick="editCourseDetails('${c.id}')">✏️ Edit</button><button class="btn btn-secondary btn-sm" onclick="manageModules('${c.id}')">📦 Modules</button><button class="btn btn-danger btn-sm" onclick="deleteCourse('${c.id}')">🗑️ Delete</button></td></tr>`).join('')}</tbody></table></div></div>`;
+  } else if (App.adminTab === 'users') {
+    container.innerHTML = `<div class="card"><div class="card-header"><div class="card-title">👥 User Management</div></div>${pending.length ? `<div style="margin-bottom:24px"><h3>⏳ Pending Approvals (${pending.length})</h3><div class="table-wrapper"><table class="data-table"><thead><tr><th>Name</th><th>Email</th><th>Registered</th><th>Action</th></tr></thead><tbody>${pending.map(u => `<tr><td>${u.name}</td><td>${u.email}</td><td>${new Date(u.createdAt?.toDate?.() || Date.now()).toLocaleDateString()}</td><td><button class="btn btn-success btn-sm" onclick="approveUser('${u.id}')">Approve</button><button class="btn btn-danger btn-sm" style="margin-left:8px" onclick="rejectUser('${u.id}')">Reject</button></td></tr>`).join('')}</tbody></table></div></div>` : ''}<h3>All Students (${students.length})</h3><div class="table-wrapper"><table class="data-table"><thead><tr><th>Name</th><th>Email</th><th>Status</th><th>XP Points</th><th>Enrolled</th><th>Completed</th></tr></thead><tbody>${students.map(u => `<tr><td>${u.name}</td><td>${u.email}</td><td><span class="badge ${u.status === 'approved' ? 'badge-success' : 'badge-warning'}">${u.status}</span></td><td>${u.points || 0}</td><td>${Object.keys(u.enrollments || {}).length}</td><td>${Object.keys(u.completedLessons || {}).length}</td></tr>`).join('')}</tbody></table></div></div>`;
+  } else if (App.adminTab === 'add-course') {
+    container.innerHTML = `<div class="card"><div class="card-header"><div class="card-title">➕ Create New Course</div></div><form id="addCourseForm"><div class="form-row"><div class="form-group"><label class="form-label">Course Title *</label><input type="text" id="courseTitle" class="form-input" required></div><div class="form-group"><label class="form-label">Category</label><input type="text" id="courseCategory" class="form-input" value="Development"></div></div><div class="form-row"><div class="form-group"><label class="form-label">Price ($)</label><input type="number" id="coursePrice" class="form-input" value="49"></div><div class="form-group"><label class="form-label">Duration</label><input type="text" id="courseDuration" class="form-input" placeholder="20 hours"></div></div><div class="form-row"><div class="form-group"><label class="form-label">Level</label><select id="courseLevel" class="form-select"><option>Beginner</option><option>Intermediate</option><option>Advanced</option></select></div><div class="form-group"><label class="form-label">Icon (emoji)</label><input type="text" id="courseThumb" class="form-input" value="📚"></div></div><div class="form-group"><label class="form-label">Description</label><textarea id="courseDescription" class="form-textarea" rows="4" placeholder="What will students learn?"></textarea></div><div class="form-group"><label class="form-label">What You'll Learn (comma separated)</label><input type="text" id="courseObjectives" class="form-input" placeholder="Build web apps, Master React, Learn Node.js"></div><button type="submit" class="btn btn-primary">✨ Create Course</button></form></div>`;
+    document.getElementById('addCourseForm').onsubmit = async (e) => {
       e.preventDefault();
       await addCourse({
-        title: document.getElementById("courseTitle")?.value,
-        category: document.getElementById("courseCategory")?.value,
-        level: document.getElementById("courseLevel")?.value,
-        description: document.getElementById("courseDescription")?.value,
-        duration: document.getElementById("courseDuration")?.value,
-        price: parseInt(document.getElementById("coursePrice")?.value) || 49,
-        thumb: document.getElementById("courseThumb")?.value,
-        thumbBg: document.getElementById("courseThumbBg")?.value,
-        instructor: G.user.name,
-        instructorInitials: G.user.name.slice(0,2).toUpperCase(),
+        title: document.getElementById('courseTitle').value,
+        category: document.getElementById('courseCategory').value,
+        price: parseInt(document.getElementById('coursePrice').value),
+        duration: document.getElementById('courseDuration').value,
+        level: document.getElementById('courseLevel').value,
+        thumb: document.getElementById('courseThumb').value,
+        description: document.getElementById('courseDescription').value,
+        objectives: document.getElementById('courseObjectives')?.value.split(',').map(o => o.trim()),
+        instructor: App.user.name,
+        instructorInitials: App.user.name.slice(0,2).toUpperCase(),
+        students: 0,
+        rating: 5.0,
         modules: []
       });
-      G.adminTab = "courses";
+      App.adminTab = 'courses';
       render();
     };
   }
 }
 
+window.editCourseDetails = (courseId) => {
+  const course = App.courses.find(c => c.id === courseId);
+  if (!course) return;
+  openModal('Edit Course', `
+    <div class="form-group"><label class="form-label">Course Title</label><input type="text" id="editTitle" class="form-input" value="${course.title.replace(/"/g, '&quot;')}"></div>
+    <div class="form-group"><label class="form-label">Description</label><textarea id="editDescription" class="form-textarea" rows="4">${course.description || ''}</textarea></div>
+    <div class="form-row"><div class="form-group"><label class="form-label">Price</label><input type="number" id="editPrice" class="form-input" value="${course.price || 49}"></div><div class="form-group"><label class="form-label">Duration</label><input type="text" id="editDuration" class="form-input" value="${course.duration || '20 hours'}"></div></div>
+    <div class="form-row"><div class="form-group"><label class="form-label">Level</label><select id="editLevel" class="form-select"><option ${course.level === 'Beginner' ? 'selected' : ''}>Beginner</option><option ${course.level === 'Intermediate' ? 'selected' : ''}>Intermediate</option><option ${course.level === 'Advanced' ? 'selected' : ''}>Advanced</option></select></div><div class="form-group"><label class="form-label">Icon</label><input type="text" id="editThumb" class="form-input" value="${course.thumb || '📚'}"></div></div>
+    <button class="btn btn-primary" onclick="saveCourseEdit('${courseId}')">Save Changes</button>
+  `);
+};
+
+window.saveCourseEdit = (courseId) => {
+  updateCourse(courseId, {
+    title: document.getElementById('editTitle')?.value,
+    description: document.getElementById('editDescription')?.value,
+    price: parseInt(document.getElementById('editPrice')?.value),
+    duration: document.getElementById('editDuration')?.value,
+    level: document.getElementById('editLevel')?.value,
+    thumb: document.getElementById('editThumb')?.value
+  });
+  closeModal();
+};
+
+window.manageModules = (courseId) => {
+  const course = App.courses.find(c => c.id === courseId);
+  if (!course) return;
+  openModal(`Manage Modules: ${course.title}`, `
+    <div id="modulesList">${(course.modules || []).map((mod, idx) => `
+      <div class="module-item" style="margin-bottom:16px;"><div class="module-header" style="background:var(--white);border:1px solid var(--border)"><span class="module-title">📘 Module ${idx+1}: ${mod.title}</span><div><button class="btn btn-sm btn-secondary" onclick="editModule('${courseId}', '${mod.id}')">✏️</button><button class="btn btn-sm btn-danger" onclick="deleteModuleConfirm('${courseId}', '${mod.id}')">🗑️</button></div></div><div style="padding:12px 16px;">${(mod.lessons || []).map(l => `<div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border);"><span><span class="lesson-icon">${l.type === 'video' ? '🎬' : l.type === 'quiz' ? '🧠' : '📝'}</span> ${l.title}</span><div><button class="btn btn-sm btn-secondary" onclick="editLesson('${courseId}', '${mod.id}', '${l.id}')">✏️</button><button class="btn btn-sm btn-danger" onclick="deleteLessonConfirm('${courseId}', '${mod.id}', '${l.id}')">🗑️</button></div></div>`).join('')}</div><div style="padding:12px;"><button class="btn btn-sm btn-primary" onclick="addLessonForm('${courseId}', '${mod.id}')">+ Add Lesson</button></div></div>
+    `).join('')}</div>
+    <div style="margin-top:20px;"><button class="btn btn-primary" onclick="addModuleForm('${courseId}')">+ Add New Module</button></div>
+    <div style="margin-top:16px;"><button class="btn btn-secondary" onclick="closeModal()">Close</button></div>
+  `);
+};
+
+window.addModuleForm = (courseId) => {
+  const title = prompt('Enter module title:');
+  if (title) addModule(courseId, title);
+  closeModal();
+  manageModules(courseId);
+};
+
+window.editModule = (courseId, moduleId) => {
+  const newTitle = prompt('Edit module title:');
+  if (newTitle) updateModule(courseId, moduleId, newTitle);
+  manageModules(courseId);
+};
+
+window.deleteModuleConfirm = (courseId, moduleId) => {
+  if (confirm('Delete this module and all its lessons?')) deleteModule(courseId, moduleId);
+  manageModules(courseId);
+};
+
+window.addLessonForm = (courseId, moduleId) => {
+  openModal('Add Lesson', `
+    <div class="form-group"><label class="form-label">Lesson Title</label><input type="text" id="lessonTitle" class="form-input" placeholder="Lesson title"></div>
+    <div class="form-row"><div class="form-group"><label class="form-label">Type</label><select id="lessonType" class="form-select"><option value="video">Video</option><option value="quiz">Quiz</option><option value="assignment">Assignment</option><option value="pdf">PDF Document</option></select></div><div class="form-group"><label class="form-label">Duration</label><input type="text" id="lessonDuration" class="form-input" placeholder="15 min"></div></div>
+    <div class="form-group"><label class="form-label">Content / YouTube URL</label><textarea id="lessonContent" class="form-textarea" rows="5" placeholder="For video: YouTube URL&#10;For lesson: Markdown content"></textarea></div>
+    <div class="form-group"><label class="form-label">Quiz Questions (JSON format)</label><textarea id="quizQuestions" class="form-textarea" rows="5" placeholder='[{"text":"Question","options":["A","B","C","D"],"correct":0,"points":10}]'></textarea></div>
+    <button class="btn btn-primary" onclick="saveLesson('${courseId}', '${moduleId}')">Add Lesson</button>
+  `);
+};
+
+window.saveLesson = (courseId, moduleId) => {
+  const lessonData = {
+    title: document.getElementById('lessonTitle')?.value,
+    type: document.getElementById('lessonType')?.value,
+    duration: document.getElementById('lessonDuration')?.value,
+    content: document.getElementById('lessonContent')?.value
+  };
+  const quizQuestions = document.getElementById('quizQuestions')?.value;
+  if (quizQuestions && lessonData.type === 'quiz') {
+    try { lessonData.quizQuestions = JSON.parse(quizQuestions); } catch(e) {}
+  }
+  addLesson(courseId, moduleId, lessonData);
+  closeModal();
+  manageModules(courseId);
+};
+
+window.editLesson = (courseId, moduleId, lessonId) => {
+  const course = App.courses.find(c => c.id === courseId);
+  const lesson = course?.modules?.find(m => m.id == moduleId)?.lessons?.find(l => l.id == lessonId);
+  if (!lesson) return;
+  openModal('Edit Lesson', `
+    <div class="form-group"><label class="form-label">Lesson Title</label><input type="text" id="lessonTitle" class="form-input" value="${lesson.title.replace(/"/g, '&quot;')}"></div>
+    <div class="form-row"><div class="form-group"><label class="form-label">Type</label><select id="lessonType" class="form-select"><option ${lesson.type === 'video' ? 'selected' : ''} value="video">Video</option><option ${lesson.type === 'quiz' ? 'selected' : ''} value="quiz">Quiz</option><option ${lesson.type === 'assignment' ? 'selected' : ''} value="assignment">Assignment</option><option ${lesson.type === 'pdf' ? 'selected' : ''} value="pdf">PDF Document</option></select></div><div class="form-group"><label class="form-label">Duration</label><input type="text" id="lessonDuration" class="form-input" value="${lesson.duration || ''}"></div></div>
+    <div class="form-group"><label class="form-label">Content / URL</label><textarea id="lessonContent" class="form-textarea" rows="5">${lesson.content || ''}</textarea></div>
+    <button class="btn btn-primary" onclick="updateLessonSave('${courseId}', '${moduleId}', '${lessonId}')">Save Changes</button>
+  `);
+};
+
+window.updateLessonSave = (courseId, moduleId, lessonId) => {
+  updateLesson(courseId, moduleId, lessonId, {
+    title: document.getElementById('lessonTitle')?.value,
+    type: document.getElementById('lessonType')?.value,
+    duration: document.getElementById('lessonDuration')?.value,
+    content: document.getElementById('lessonContent')?.value
+  });
+  closeModal();
+  manageModules(courseId);
+};
+
+window.deleteLessonConfirm = (courseId, moduleId, lessonId) => {
+  if (confirm('Delete this lesson?')) deleteLesson(courseId, moduleId, lessonId);
+  manageModules(courseId);
+};
+
+// ============================================
+// GLOBAL FUNCTIONS
+// ============================================
+window.changeView = (view) => { App.currentView = view; render(); };
+window.setAdminTab = (tab) => { App.adminTab = tab; render(); };
+window.setCourseTab = (tab) => { App.courseTab = tab; render(); };
+window.approveUser = approveUser;
+window.rejectUser = rejectUser;
+window.deleteCourse = deleteCourse;
+window.toggleModule = toggleModule;
+
 // ============================================
 // INITIALIZATION
 // ============================================
 async function init() {
-  const saved = sessionStorage.getItem("lf_user");
+  const saved = sessionStorage.getItem('learnflow_user');
   if (saved) {
-    G.user = JSON.parse(saved);
-    await loadAllData();
-    G.view = G.user.role === "admin" ? "admin" : "home";
+    App.user = JSON.parse(saved);
+    await loadData();
+    App.currentView = App.user.role === 'admin' ? 'admin' : 'home';
   }
   render();
 }
