@@ -1,0 +1,1229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LearnFlow — Advanced LMS Platform</title>
+<!-- Firebase SDKs -->
+<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+<style>
+:root {
+  --brand: #4f46e5;
+  --brand-light: #eef2ff;
+  --brand-mid: #818cf8;
+  --surface: #ffffff;
+  --surface-alt: #f8fafc;
+  --surface-hover: #f1f5f9;
+  --border: #e2e8f0;
+  --border-strong: #cbd5e1;
+  --text: #0f172a;
+  --text-2: #475569;
+  --text-3: #94a3b8;
+  --success: #16a34a;
+  --success-bg: #f0fdf4;
+  --warn: #d97706;
+  --warn-bg: #fffbeb;
+  --danger: #dc2626;
+  --danger-bg: #fef2f2;
+  --info: #0284c7;
+  --info-bg: #f0f9ff;
+  --radius: 10px;
+  --radius-lg: 16px;
+  --shadow: 0 1px 3px rgba(0,0,0,.08), 0 1px 2px rgba(0,0,0,.04);
+  --shadow-md: 0 4px 12px rgba(0,0,0,.10);
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+body { font-family: 'Inter', system-ui, -apple-system, sans-serif; background:#f1f5f9; color:var(--text); min-height:100vh; font-size:15px; line-height:1.6; }
+a { color:var(--brand); text-decoration:none; }
+button { cursor:pointer; font-family:inherit; font-size:15px; }
+input, textarea, select { font-family:inherit; font-size:15px; }
+h1,h2,h3,h4 { font-weight:600; line-height:1.3; }
+
+/* Layout */
+.app-shell { display:flex; min-height:100vh; }
+.sidebar { width:260px; background:var(--surface); border-right:1px solid var(--border); display:flex; flex-direction:column; position:fixed; top:0; left:0; bottom:0; z-index:100; transition:transform .25s; overflow-y:auto; }
+.sidebar-logo { padding:20px 20px 16px; border-bottom:1px solid var(--border); }
+.sidebar-logo .wordmark { font-size:19px; font-weight:700; color:var(--brand); letter-spacing:-.3px; }
+.sidebar-logo .tagline { font-size:11px; color:var(--text-3); margin-top:2px; }
+.sidebar-nav { flex:1; padding:12px 10px; }
+.nav-section-label { font-size:10px; font-weight:600; color:var(--text-3); letter-spacing:.8px; text-transform:uppercase; padding:12px 10px 6px; }
+.nav-item { display:flex; align-items:center; gap:10px; padding:9px 12px; border-radius:var(--radius); color:var(--text-2); font-size:14px; font-weight:500; cursor:pointer; transition:all .15s; margin-bottom:2px; border:none; background:none; width:100%; text-align:left; }
+.nav-item:hover { background:var(--surface-alt); color:var(--text); }
+.nav-item.active { background:var(--brand-light); color:var(--brand); }
+.nav-item .nav-icon { font-size:18px; width:20px; flex-shrink:0; }
+.nav-badge { margin-left:auto; background:var(--brand); color:white; font-size:10px; font-weight:700; padding:1px 6px; border-radius:20px; min-width:18px; text-align:center; }
+.sidebar-footer { padding:12px; border-top:1px solid var(--border); }
+.user-pill { display:flex; align-items:center; gap:10px; padding:8px 10px; border-radius:var(--radius); background:var(--surface-alt); }
+.avatar { width:32px; height:32px; border-radius:50%; background:var(--brand); color:white; display:flex; align-items:center; justify-content:center; font-size:13px; font-weight:600; flex-shrink:0; }
+.user-pill .uname { font-size:13px; font-weight:600; line-height:1.2; }
+.user-pill .urole { font-size:11px; color:var(--text-3); }
+.logout-btn { font-size:12px; color:var(--text-3); background:none; border:none; cursor:pointer; padding:0; display:block; margin-top:4px; text-align:left; }
+.logout-btn:hover { color:var(--danger); }
+
+.main { margin-left:260px; flex:1; min-height:100vh; }
+.topbar { background:var(--surface); border-bottom:1px solid var(--border); padding:0 28px; height:56px; display:flex; align-items:center; justify-content:space-between; position:sticky; top:0; z-index:50; }
+.topbar-title { font-size:17px; font-weight:600; }
+.topbar-actions { display:flex; align-items:center; gap:10px; }
+.content-area { padding:28px; max-width:1200px; }
+
+/* Buttons */
+.btn { display:inline-flex; align-items:center; gap:7px; padding:9px 18px; border-radius:var(--radius); font-weight:500; font-size:14px; border:1px solid transparent; transition:all .15s; }
+.btn-primary { background:var(--brand); color:white; border-color:var(--brand); }
+.btn-primary:hover { background:#4338ca; }
+.btn-secondary { background:var(--surface); color:var(--text); border-color:var(--border); }
+.btn-secondary:hover { background:var(--surface-alt); }
+.btn-danger { background:var(--danger); color:white; }
+.btn-success { background:var(--success); color:white; }
+.btn-sm { padding:5px 12px; font-size:13px; }
+.btn:disabled { opacity:.5; cursor:not-allowed; }
+.icon-btn { width:34px; height:34px; display:inline-flex; align-items:center; justify-content:center; border-radius:var(--radius); border:1px solid var(--border); background:var(--surface); color:var(--text-2); font-size:16px; transition:all .15s; }
+.icon-btn:hover { background:var(--surface-alt); color:var(--text); }
+
+/* Cards */
+.card { background:var(--surface); border:1px solid var(--border); border-radius:var(--radius-lg); padding:20px; }
+.card-sm { padding:14px 16px; }
+.section-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:18px; }
+.section-title { font-size:16px; font-weight:600; }
+
+/* Stats row */
+.stats-row { display:grid; grid-template-columns:repeat(auto-fit,minmax(160px,1fr)); gap:16px; margin-bottom:24px; }
+.stat-card { background:var(--surface); border:1px solid var(--border); border-radius:var(--radius-lg); padding:18px 20px; }
+.stat-num { font-size:26px; font-weight:700; line-height:1; margin-bottom:4px; }
+.stat-label { font-size:13px; color:var(--text-2); }
+.stat-delta { font-size:12px; color:var(--success); margin-top:6px; }
+
+/* Badges */
+.badge { display:inline-flex; align-items:center; gap:4px; padding:3px 9px; border-radius:20px; font-size:12px; font-weight:600; }
+.badge-success { background:var(--success-bg); color:var(--success); }
+.badge-warn { background:var(--warn-bg); color:var(--warn); }
+.badge-danger { background:var(--danger-bg); color:var(--danger); }
+.badge-info { background:var(--info-bg); color:var(--info); }
+.badge-brand { background:var(--brand-light); color:var(--brand); }
+.badge-gray { background:#f1f5f9; color:var(--text-2); }
+
+/* Course Cards */
+.courses-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(290px,1fr)); gap:18px; }
+.course-card { background:var(--surface); border:1px solid var(--border); border-radius:var(--radius-lg); overflow:hidden; cursor:pointer; transition:all .2s; }
+.course-card:hover { box-shadow:var(--shadow-md); transform:translateY(-2px); border-color:var(--brand-mid); }
+.course-thumb { height:140px; display:flex; align-items:center; justify-content:center; font-size:40px; position:relative; }
+.course-body { padding:16px; }
+.course-title { font-size:15px; font-weight:600; margin-bottom:5px; }
+.course-meta { font-size:12px; color:var(--text-2); display:flex; gap:12px; flex-wrap:wrap; margin-bottom:10px; }
+.course-progress { height:4px; background:#e2e8f0; border-radius:4px; overflow:hidden; }
+.course-progress-bar { height:100%; background:var(--brand); border-radius:4px; transition:width .4s; }
+
+/* Modal */
+.modal-overlay { position:fixed; inset:0; background:rgba(0,0,0,.5); z-index:1000; display:none; align-items:center; justify-content:center; }
+.modal-overlay.active { display:flex; }
+.modal { background:white; border-radius:var(--radius-lg); padding:28px; max-width:600px; width:90%; max-height:85vh; overflow-y:auto; }
+.modal-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:20px; }
+.modal-title { font-size:18px; font-weight:600; }
+.modal-close { background:none; border:none; font-size:24px; cursor:pointer; color:var(--text-3); }
+
+/* Form elements */
+.form-group { margin-bottom:18px; }
+.form-label { display:block; font-size:13px; font-weight:600; margin-bottom:6px; color:var(--text); }
+.form-input { width:100%; padding:10px 13px; border:1px solid var(--border); border-radius:var(--radius); background:var(--surface); transition:border-color .15s; }
+.form-input:focus { outline:none; border-color:var(--brand); }
+.form-select { width:100%; padding:10px 13px; border:1px solid var(--border); border-radius:var(--radius); background:var(--surface); }
+textarea.form-input { resize:vertical; min-height:80px; }
+
+/* Tables */
+.data-table { width:100%; border-collapse:collapse; }
+.data-table th { background:var(--surface-alt); padding:12px 16px; text-align:left; font-size:12px; font-weight:600; color:var(--text-2); border-bottom:1px solid var(--border); }
+.data-table td { padding:12px 16px; border-bottom:1px solid var(--border); font-size:14px; }
+.data-table tr:hover td { background:var(--surface-alt); }
+.data-table .actions { display:flex; gap:8px; }
+
+/* Toast */
+.toast { position:fixed; bottom:24px; right:24px; background:var(--text); color:white; padding:12px 20px; border-radius:var(--radius); font-size:14px; z-index:9999; max-width:340px; animation:toastIn .25s ease; }
+.toast.success { background:var(--success); }
+.toast.danger { background:var(--danger); }
+@keyframes toastIn { from { opacity:0; transform:translateY(12px); } to { opacity:1; transform:translateY(0); } }
+
+/* Auth */
+.auth-page { min-height:100vh; display:flex; background:linear-gradient(135deg,#4f46e5 0%,#7c3aed 100%); }
+.auth-left { flex:1; display:flex; flex-direction:column; justify-content:center; padding:60px; color:white; }
+.auth-left h1 { font-size:42px; font-weight:800; letter-spacing:-1.5px; margin-bottom:12px; }
+.auth-left p { font-size:17px; opacity:.8; max-width:400px; line-height:1.6; }
+.auth-features { margin-top:40px; display:flex; flex-direction:column; gap:14px; }
+.auth-feature { display:flex; align-items:center; gap:12px; font-size:15px; }
+.auth-feature-icon { width:32px; height:32px; background:rgba(255,255,255,.15); border-radius:8px; display:flex; align-items:center; justify-content:center; font-size:16px; flex-shrink:0; }
+.auth-right { width:480px; background:white; display:flex; align-items:center; justify-content:center; padding:48px; }
+.auth-form { width:100%; max-width:360px; }
+.auth-form h2 { font-size:24px; font-weight:700; margin-bottom:6px; }
+.auth-form .auth-sub { color:var(--text-2); margin-bottom:28px; font-size:15px; }
+
+/* Tabs */
+.tabs { display:flex; gap:2px; background:var(--surface-alt); border-radius:var(--radius); padding:3px; width:fit-content; margin-bottom:20px; }
+.tab { padding:7px 16px; border-radius:7px; font-size:14px; font-weight:500; border:none; background:none; color:var(--text-2); cursor:pointer; transition:all .15s; }
+.tab.active { background:var(--surface); color:var(--text); box-shadow:0 1px 3px rgba(0,0,0,.1); }
+
+/* Loading */
+.loading { text-align:center; padding:40px; color:var(--text-3); }
+.spinner { width:40px; height:40px; border:3px solid var(--border); border-top-color:var(--brand); border-radius:50%; animation:spin 1s linear infinite; margin:0 auto 16px; }
+@keyframes spin { to { transform:rotate(360deg); } }
+
+@media (max-width:768px) {
+  .sidebar { transform:translateX(-100%); }
+  .sidebar.open { transform:none; }
+  .main { margin-left:0; }
+  .auth-left { display:none; }
+  .auth-right { width:100%; }
+}
+</style>
+</head>
+<body>
+<div id="root"></div>
+
+<script>
+// ============================================
+// FIREBASE CONFIGURATION
+// ============================================
+// IMPORTANT: Replace this with your own Firebase config from Firebase Console
+const firebaseConfig = {
+  // Import the functions you need from the SDKs you need
+import { initializeApp } from "firebase/app";
+// TODO: Add SDKs for Firebase products that you want to use
+// https://firebase.google.com/docs/web/setup#available-libraries
+
+// Your web app's Firebase configuration
+const firebaseConfig = {
+  apiKey: "AIzaSyABRGIhbtThA7o141zlPSLIpeMZcvAdFvo",
+  authDomain: "learnflow-lms-8cc2b.firebaseapp.com",
+  projectId: "learnflow-lms-8cc2b",
+  storageBucket: "learnflow-lms-8cc2b.firebasestorage.app",
+  messagingSenderId: "744393992645",
+  appId: "1:744393992645:web:3d60e095c2a407ff1983ac"
+};
+
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
+const db = firebase.firestore();
+const auth = firebase.auth();
+
+// ============================================
+// GLOBAL STATE
+// ============================================
+let G = {
+  view: "auth",
+  user: null,
+  users: [],
+  courses: [],
+  enrollments: {},
+  completedLessons: {},
+  quizResults: {},
+  assignments: {},
+  currentCourse: null,
+  currentLesson: null,
+  quizState: null,
+  adminTab: "users",
+  courseTab: "overview",
+  loading: false
+};
+
+// ============================================
+// HELPER FUNCTIONS
+// ============================================
+function toast(msg, type = "") {
+  const el = document.createElement("div");
+  el.className = "toast" + (type ? " " + type : "");
+  el.textContent = msg;
+  document.body.appendChild(el);
+  setTimeout(() => el.remove(), 3200);
+}
+
+function showLoading() {
+  G.loading = true;
+  render();
+}
+
+function hideLoading() {
+  G.loading = false;
+  render();
+}
+
+// ============================================
+// FIREBASE DATA OPERATIONS
+// ============================================
+async function loadAllData() {
+  showLoading();
+  try {
+    // Load courses
+    const coursesSnapshot = await db.collection("courses").get();
+    G.courses = [];
+    coursesSnapshot.forEach(doc => {
+      G.courses.push({ id: doc.id, ...doc.data() });
+    });
+    
+    // Load users if admin
+    if (G.user && G.user.role === "admin") {
+      const usersSnapshot = await db.collection("users").get();
+      G.users = [];
+      usersSnapshot.forEach(doc => {
+        G.users.push({ id: doc.id, ...doc.data() });
+      });
+    }
+    
+    // Load user progress if logged in
+    if (G.user && G.user.role === "student") {
+      const progressDoc = await db.collection("progress").doc(G.user.id).get();
+      if (progressDoc.exists) {
+        const data = progressDoc.data();
+        G.enrollments = data.enrollments || {};
+        G.completedLessons = data.completedLessons || {};
+        G.quizResults = data.quizResults || {};
+        G.user.points = data.points || 0;
+      }
+    }
+  } catch (error) {
+    console.error("Error loading data:", error);
+    toast("Error loading data. Using local data.", "danger");
+    // Fallback to default courses if Firebase fails
+    if (G.courses.length === 0) {
+      G.courses = getDefaultCourses();
+    }
+  }
+  hideLoading();
+  render();
+}
+
+async function saveUserProgress() {
+  if (!G.user || G.user.role !== "student") return;
+  try {
+    await db.collection("progress").doc(G.user.id).set({
+      enrollments: G.enrollments,
+      completedLessons: G.completedLessons,
+      quizResults: G.quizResults,
+      points: G.user.points || 0,
+      updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+    }, { merge: true });
+  } catch (error) {
+    console.error("Error saving progress:", error);
+  }
+}
+
+async function addCourse(courseData) {
+  showLoading();
+  try {
+    const docRef = await db.collection("courses").add({
+      ...courseData,
+      createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+      students: 0,
+      rating: 5.0
+    });
+    await loadAllData();
+    toast("Course added successfully!", "success");
+    return docRef.id;
+  } catch (error) {
+    console.error("Error adding course:", error);
+    toast("Error adding course", "danger");
+  }
+  hideLoading();
+}
+
+async function updateCourse(courseId, courseData) {
+  showLoading();
+  try {
+    await db.collection("courses").doc(courseId).update(courseData);
+    await loadAllData();
+    toast("Course updated successfully!", "success");
+  } catch (error) {
+    console.error("Error updating course:", error);
+    toast("Error updating course", "danger");
+  }
+  hideLoading();
+}
+
+async function deleteCourse(courseId) {
+  if (!confirm("Are you sure you want to delete this course? This action cannot be undone.")) return;
+  showLoading();
+  try {
+    await db.collection("courses").doc(courseId).delete();
+    await loadAllData();
+    toast("Course deleted successfully!", "success");
+    if (G.view === "course-detail") {
+      G.view = "admin";
+      G.adminTab = "courses";
+    }
+  } catch (error) {
+    console.error("Error deleting course:", error);
+    toast("Error deleting course", "danger");
+  }
+  hideLoading();
+}
+
+async function addLessonToCourse(courseId, moduleId, lessonData) {
+  const course = G.courses.find(c => c.id === courseId);
+  if (!course) return;
+  
+  const updatedModules = [...course.modules];
+  const moduleIndex = updatedModules.findIndex(m => m.id === moduleId);
+  if (moduleIndex === -1) return;
+  
+  const newLesson = {
+    id: Date.now(),
+    ...lessonData
+  };
+  updatedModules[moduleIndex].lessons.push(newLesson);
+  
+  await updateCourse(courseId, { modules: updatedModules });
+}
+
+async function updateLesson(courseId, moduleId, lessonId, lessonData) {
+  const course = G.courses.find(c => c.id === courseId);
+  if (!course) return;
+  
+  const updatedModules = [...course.modules];
+  const moduleIndex = updatedModules.findIndex(m => m.id === moduleId);
+  if (moduleIndex === -1) return;
+  
+  const lessonIndex = updatedModules[moduleIndex].lessons.findIndex(l => l.id === lessonId);
+  if (lessonIndex === -1) return;
+  
+  updatedModules[moduleIndex].lessons[lessonIndex] = { 
+    ...updatedModules[moduleIndex].lessons[lessonIndex], 
+    ...lessonData 
+  };
+  
+  await updateCourse(courseId, { modules: updatedModules });
+}
+
+async function deleteLesson(courseId, moduleId, lessonId) {
+  const course = G.courses.find(c => c.id === courseId);
+  if (!course) return;
+  
+  const updatedModules = [...course.modules];
+  const moduleIndex = updatedModules.findIndex(m => m.id === moduleId);
+  if (moduleIndex === -1) return;
+  
+  updatedModules[moduleIndex].lessons = updatedModules[moduleIndex].lessons.filter(l => l.id !== lessonId);
+  
+  await updateCourse(courseId, { modules: updatedModules });
+}
+
+async function addModule(courseId, moduleData) {
+  const course = G.courses.find(c => c.id === courseId);
+  if (!course) return;
+  
+  const newModule = {
+    id: Date.now(),
+    title: moduleData.title,
+    lessons: []
+  };
+  
+  const updatedModules = [...course.modules, newModule];
+  await updateCourse(courseId, { modules: updatedModules });
+}
+
+async function updateModule(courseId, moduleId, moduleData) {
+  const course = G.courses.find(c => c.id === courseId);
+  if (!course) return;
+  
+  const updatedModules = course.modules.map(m => 
+    m.id === moduleId ? { ...m, title: moduleData.title } : m
+  );
+  
+  await updateCourse(courseId, { modules: updatedModules });
+}
+
+async function deleteModule(courseId, moduleId) {
+  const course = G.courses.find(c => c.id === courseId);
+  if (!course) return;
+  
+  const updatedModules = course.modules.filter(m => m.id !== moduleId);
+  await updateCourse(courseId, { modules: updatedModules });
+}
+
+async function approveUser(userId) {
+  try {
+    await db.collection("users").doc(userId).update({ status: "approved" });
+    await loadAllData();
+    toast("User approved successfully!", "success");
+  } catch (error) {
+    console.error("Error approving user:", error);
+    toast("Error approving user", "danger");
+  }
+}
+
+async function rejectUser(userId) {
+  if (!confirm("Reject and remove this user?")) return;
+  try {
+    await db.collection("users").doc(userId).delete();
+    await loadAllData();
+    toast("User rejected and removed", "info");
+  } catch (error) {
+    console.error("Error rejecting user:", error);
+    toast("Error rejecting user", "danger");
+  }
+}
+
+function getDefaultCourses() {
+  return [
+    {
+      id: "1",
+      title: "Complete Web Development Bootcamp",
+      category: "Development",
+      instructor: "Sarah Chen",
+      instructorInitials: "SC",
+      thumb: "??",
+      thumbBg: "#eef2ff",
+      level: "Beginner",
+      duration: "42 hours",
+      students: 2847,
+      rating: 4.8,
+      price: 89,
+      description: "Learn HTML, CSS, JavaScript, React and Node.js from scratch.",
+      modules: [
+        { id: 101, title: "HTML Foundations", lessons: [
+          { id: 1001, title: "What is HTML?", duration: "8:24", type: "video" },
+          { id: 1002, title: "Tags and Structure", duration: "12:10", type: "video" },
+          { id: 1003, title: "HTML Quiz", duration: "10 min", type: "quiz" }
+        ]},
+        { id: 102, title: "CSS Styling", lessons: [
+          { id: 1004, title: "Selectors and Properties", duration: "14:38", type: "video" },
+          { id: 1005, title: "Flexbox & Grid", duration: "18:22", type: "video" },
+          { id: 1006, title: "CSS Assignment", duration: "30 min", type: "assignment" }
+        ]}
+      ]
+    },
+    {
+      id: "2",
+      title: "Data Science with Python",
+      category: "Data Science",
+      instructor: "Marcus Williams",
+      instructorInitials: "MW",
+      thumb: "??",
+      thumbBg: "#f0fdf4",
+      level: "Intermediate",
+      duration: "38 hours",
+      students: 1923,
+      rating: 4.9,
+      price: 99,
+      description: "Master pandas, numpy, matplotlib, scikit-learn and more.",
+      modules: [
+        { id: 201, title: "Python Refresher", lessons: [
+          { id: 2001, title: "Python Basics Review", duration: "10:00", type: "video" },
+          { id: 2002, title: "Functions & OOP", duration: "14:20", type: "video" }
+        ]}
+      ]
+    }
+  ];
+}
+
+// ============================================
+// AUTHENTICATION
+// ============================================
+async function handleLogin(email, password, role) {
+  showLoading();
+  try {
+    // For demo, we'll check against Firestore users collection
+    const usersSnapshot = await db.collection("users").where("email", "==", email).where("password", "==", password).get();
+    
+    if (usersSnapshot.empty) {
+      toast("Invalid credentials", "danger");
+      hideLoading();
+      return false;
+    }
+    
+    const userDoc = usersSnapshot.docs[0];
+    const userData = userDoc.data();
+    
+    if (role === "admin" && userData.role !== "admin") {
+      toast("Not an admin account", "danger");
+      hideLoading();
+      return false;
+    }
+    
+    if (role === "student" && userData.status !== "approved") {
+      toast("Account pending approval", "danger");
+      hideLoading();
+      return false;
+    }
+    
+    G.user = { id: userDoc.id, ...userData };
+    sessionStorage.setItem("lf_user", JSON.stringify(G.user));
+    
+    await loadAllData();
+    G.view = role === "admin" ? "admin" : "home";
+    render();
+    toast(`Welcome back, ${G.user.name}!`, "success");
+    return true;
+  } catch (error) {
+    console.error("Login error:", error);
+    toast("Login error", "danger");
+    hideLoading();
+    return false;
+  }
+}
+
+async function handleRegister(name, email, password) {
+  showLoading();
+  try {
+    // Check if user exists
+    const existing = await db.collection("users").where("email", "==", email).get();
+    if (!existing.empty) {
+      toast("Email already registered", "danger");
+      hideLoading();
+      return false;
+    }
+    
+    const userData = {
+      name,
+      email,
+      password,
+      role: "student",
+      status: "pending",
+      points: 0,
+      createdAt: firebase.firestore.FieldValue.serverTimestamp()
+    };
+    
+    const docRef = await db.collection("users").add(userData);
+    toast("Account created! Awaiting admin approval.", "success");
+    hideLoading();
+    return true;
+  } catch (error) {
+    console.error("Registration error:", error);
+    toast("Registration error", "danger");
+    hideLoading();
+    return false;
+  }
+}
+
+function logout() {
+  G.user = null;
+  sessionStorage.removeItem("lf_user");
+  G.view = "auth";
+  render();
+}
+
+// ============================================
+// RENDER FUNCTIONS (Simplified - Core Structure)
+// ============================================
+function render() {
+  const root = document.getElementById("root");
+  
+  if (G.loading) {
+    root.innerHTML = `<div class="loading"><div class="spinner"></div><p>Loading...</p></div>`;
+    return;
+  }
+  
+  if (G.view === "auth") {
+    root.innerHTML = authView();
+    bindAuth();
+    return;
+  }
+  
+  root.innerHTML = shellView();
+  const content = document.getElementById("page-content");
+  
+  switch(G.view) {
+    case "home": content.innerHTML = homeView(); break;
+    case "catalog": content.innerHTML = catalogView(); break;
+    case "course-detail": content.innerHTML = courseDetailView(); break;
+    case "lesson": content.innerHTML = lessonView(); break;
+    case "quiz": content.innerHTML = quizView(); break;
+    case "assignments": content.innerHTML = assignmentsView(); break;
+    case "analytics": content.innerHTML = analyticsView(); break;
+    case "discussion": content.innerHTML = discussionView(); break;
+    case "certificates": content.innerHTML = certificatesView(); break;
+    case "admin": content.innerHTML = adminView(); break;
+  }
+  
+  bindNav();
+  if (G.view === "admin") bindAdminEvents();
+}
+
+function authView() {
+  return `
+  <div class="auth-page">
+    <div class="auth-left">
+      <div style="font-size:28px;font-weight:800;margin-bottom:8px;">LearnFlow</div>
+      <h1>Learn without limits.</h1>
+      <p>The professional online learning platform built for modern creators and learners.</p>
+      <div class="auth-features">
+        <div class="auth-feature"><div class="auth-feature-icon">??</div>Video lessons with tracking</div>
+        <div class="auth-feature"><div class="auth-feature-icon">??</div>Interactive quizzes</div>
+        <div class="auth-feature"><div class="auth-feature-icon">??</div>Assignments</div>
+        <div class="auth-feature"><div class="auth-feature-icon">??</div>Certificates</div>
+      </div>
+    </div>
+    <div class="auth-right">
+      <div class="auth-form" id="authFormWrap">
+        ${loginForm()}
+      </div>
+    </div>
+  </div>`;
+}
+
+function loginForm() {
+  return `
+    <h2>Welcome back</h2>
+    <p class="auth-sub">Sign in to continue learning</p>
+    <div class="form-group"><label class="form-label">Email</label><input class="form-input" id="li-email" type="email" placeholder="you@email.com"></div>
+    <div class="form-group"><label class="form-label">Password</label><input class="form-input" id="li-pass" type="password" placeholder="Your password"></div>
+    <button class="btn btn-primary" style="width:100%;justify-content:center;padding:11px" id="li-btn">Sign in</button>
+    <div style="margin-top:14px;text-align:center;font-size:13px;color:var(--text-2)">
+      No account? <a href="#" onclick="showRegister()">Create one</a> &nbsp;·&nbsp; <a href="#" onclick="showAdminLogin()">Admin login</a>
+    </div>
+    <div style="margin-top:16px;padding:12px;background:var(--surface-alt);border-radius:var(--radius);font-size:12px;">
+      <strong>First time setup:</strong> Register an admin account first, then approve students.
+    </div>`;
+}
+
+function registerForm() {
+  return `
+    <h2>Create account</h2>
+    <p class="auth-sub">Join thousands of learners today</p>
+    <div class="form-group"><label class="form-label">Full name</label><input class="form-input" id="rg-name" type="text" placeholder="Your name"></div>
+    <div class="form-group"><label class="form-label">Email</label><input class="form-input" id="rg-email" type="email" placeholder="you@email.com"></div>
+    <div class="form-group"><label class="form-label">Password</label><input class="form-input" id="rg-pass" type="password" placeholder="Choose a password"></div>
+    <button class="btn btn-primary" style="width:100%;justify-content:center;padding:11px" id="rg-btn">Create account</button>
+    <div style="margin-top:14px;text-align:center;font-size:13px;">Already have an account? <a href="#" onclick="showLogin()">Sign in</a></div>`;
+}
+
+function adminLoginForm() {
+  return `
+    <h2>Admin login</h2>
+    <p class="auth-sub">Platform management access</p>
+    <div class="form-group"><label class="form-label">Admin Email</label><input class="form-input" id="adm-email" type="email" placeholder="admin@learnflow.com"></div>
+    <div class="form-group"><label class="form-label">Password</label><input class="form-input" id="adm-pass" type="password" placeholder="••••••••"></div>
+    <button class="btn btn-primary" style="width:100%;justify-content:center;padding:11px" id="adm-btn">Admin sign in</button>
+    <div style="margin-top:14px;text-align:center;"><a href="#" onclick="showLogin()">? Back to student login</a></div>
+    <div class="divider" style="margin:16px 0;"></div>
+    <div style="background:var(--surface-alt);padding:12px;border-radius:var(--radius);font-size:12px;">
+      <strong>First time?</strong> Create an admin account by registering as a student first, 
+      then manually set role="admin" in Firebase Console ? Firestore ? users collection.
+    </div>`;
+}
+
+function showLogin() { document.getElementById("authFormWrap").innerHTML = loginForm(); bindAuth(); }
+function showRegister() { document.getElementById("authFormWrap").innerHTML = registerForm(); bindAuth(); }
+function showAdminLogin() { document.getElementById("authFormWrap").innerHTML = adminLoginForm(); bindAuth(); }
+
+function bindAuth() {
+  const liBtn = document.getElementById("li-btn");
+  if (liBtn) liBtn.onclick = () => {
+    const email = document.getElementById("li-email").value.trim();
+    const pass = document.getElementById("li-pass").value;
+    if (email && pass) handleLogin(email, pass, "student");
+    else toast("Fill all fields", "danger");
+  };
+  
+  const rgBtn = document.getElementById("rg-btn");
+  if (rgBtn) rgBtn.onclick = () => {
+    const name = document.getElementById("rg-name").value.trim();
+    const email = document.getElementById("rg-email").value.trim();
+    const pass = document.getElementById("rg-pass").value;
+    if (name && email && pass) handleRegister(name, email, pass);
+    else toast("Fill all fields", "danger");
+  };
+  
+  const admBtn = document.getElementById("adm-btn");
+  if (admBtn) admBtn.onclick = () => {
+    const email = document.getElementById("adm-email").value.trim();
+    const pass = document.getElementById("adm-pass").value;
+    if (email && pass) handleLogin(email, pass, "admin");
+    else toast("Fill all fields", "danger");
+  };
+}
+
+function shellView() {
+  const isAdmin = G.user?.role === "admin";
+  const pendingCount = G.users.filter(u => u.status === "pending").length;
+  const initials = G.user?.name?.split(" ").map(w=>w[0]).join("").slice(0,2).toUpperCase() || "?";
+  
+  return `
+  <div class="app-shell">
+    <aside class="sidebar">
+      <div class="sidebar-logo"><div class="wordmark">LearnFlow</div><div class="tagline">LMS Platform</div></div>
+      <nav class="sidebar-nav">
+        ${isAdmin ? `
+        <div class="nav-section-label">Admin</div>
+        <button class="nav-item ${G.view==='admin'?'active':''}" data-nav="admin"><span class="nav-icon">??</span> Dashboard ${pendingCount>0?`<span class="nav-badge">${pendingCount}</span>`:""}</button>
+        ` : `
+        <div class="nav-section-label">Learn</div>
+        <button class="nav-item ${G.view==='home'?'active':''}" data-nav="home"><span class="nav-icon">??</span> Home</button>
+        <button class="nav-item ${G.view==='catalog'?'active':''}" data-nav="catalog"><span class="nav-icon">??</span> All Courses</button>
+        <div class="nav-section-label">My Learning</div>
+        <button class="nav-item ${G.view==='assignments'?'active':''}" data-nav="assignments"><span class="nav-icon">??</span> Assignments</button>
+        <button class="nav-item ${G.view==='discussion'?'active':''}" data-nav="discussion"><span class="nav-icon">??</span> Discussions</button>
+        <button class="nav-item ${G.view==='analytics'?'active':''}" data-nav="analytics"><span class="nav-icon">??</span> Progress</button>
+        <button class="nav-item ${G.view==='certificates'?'active':''}" data-nav="certificates"><span class="nav-icon">??</span> Certificates</button>
+        `}
+      </nav>
+      <div class="sidebar-footer">
+        <div class="user-pill">
+          <div class="avatar">${initials}</div>
+          <div><div class="uname">${G.user?.name?.split(" ")[0] || ""}</div><div class="urole">${isAdmin ? "Admin" : "Student"}</div></div>
+        </div>
+        <button class="logout-btn" onclick="logout()">? Sign out</button>
+      </div>
+    </aside>
+    <main class="main">
+      <header class="topbar">
+        <div class="topbar-title">${getTitle()}</div>
+        <div class="topbar-actions">
+          ${!isAdmin ? `<span class="badge badge-brand">? ${G.user?.points || 0} pts</span>` : ""}
+        </div>
+      </header>
+      <div class="content-area" id="page-content"></div>
+    </main>
+  </div>`;
+}
+
+function getTitle() {
+  const titles = { home:"Home", catalog:"Course Catalog", "course-detail":"Course Details", lesson:"Lesson", quiz:"Quiz", assignments:"Assignments", analytics:"My Progress", discussion:"Discussions", certificates:"Certificates", admin:"Admin Dashboard" };
+  return titles[G.view] || "LearnFlow";
+}
+
+function bindNav() {
+  document.querySelectorAll("[data-nav]").forEach(btn => {
+    btn.onclick = () => { G.view = btn.dataset.nav; render(); };
+  });
+}
+
+// ============================================
+// HOME VIEW
+// ============================================
+function homeView() {
+  const enrolled = G.courses.filter(c => G.enrollments[c.id]);
+  return `
+  <div style="margin-bottom:24px">
+    <h2 style="font-size:22px;font-weight:700;">Good day, ${G.user?.name?.split(" ")[0] || "Learner"} ??</h2>
+    <p style="color:var(--text-2)">Continue your learning journey.</p>
+  </div>
+  <div class="stats-row">
+    <div class="stat-card"><div class="stat-num" style="color:var(--brand)">${enrolled.length}</div><div class="stat-label">Enrolled Courses</div></div>
+    <div class="stat-card"><div class="stat-num" style="color:var(--success)">${Object.keys(G.completedLessons).length}</div><div class="stat-label">Lessons Done</div></div>
+    <div class="stat-card"><div class="stat-num" style="color:var(--warn)">${Object.keys(G.quizResults).length}</div><div class="stat-label">Quizzes Taken</div></div>
+    <div class="stat-card"><div class="stat-num" style="color:#7c3aed">${G.user?.points || 0}</div><div class="stat-label">Points Earned</div></div>
+  </div>
+  <div class="card">
+    <div class="section-header"><div class="section-title">My Courses</div><button class="btn btn-secondary btn-sm" onclick="G.view='catalog';render()">Browse all ?</button></div>
+    <div class="courses-grid">
+      ${enrolled.length ? enrolled.map(c => simpleCourseCard(c)).join("") : '<div style="text-align:center;padding:40px;color:var(--text-3);">No courses yet. <a href="#" onclick="G.view=\'catalog\';render()">Browse catalog ?</a></div>'}
+    </div>
+  </div>`;
+}
+
+function simpleCourseCard(course) {
+  const progress = Math.floor(Math.random() * 60) + 20;
+  return `
+  <div class="course-card" onclick="openCourse('${course.id}')">
+    <div class="course-thumb" style="background:${course.thumbBg}">${course.thumb}</div>
+    <div class="course-body">
+      <div class="course-title">${course.title}</div>
+      <div class="course-meta"><span>? ${course.rating}</span><span>?? ${course.duration}</span></div>
+      <div class="course-progress"><div class="course-progress-bar" style="width:${progress}%"></div></div>
+      <div style="font-size:11px;color:var(--text-3);margin-top:4px">${progress}% complete</div>
+    </div>
+  </div>`;
+}
+
+// ============================================
+// CATALOG VIEW
+// ============================================
+function catalogView() {
+  return `
+  <h2 class="section-title" style="margin-bottom:20px">Course Catalog</h2>
+  <div class="courses-grid">
+    ${G.courses.map(c => catalogCourseCard(c)).join("")}
+  </div>`;
+}
+
+function catalogCourseCard(course) {
+  const enrolled = !!G.enrollments[course.id];
+  return `
+  <div class="course-card" onclick="openCourse('${course.id}')">
+    <div class="course-thumb" style="background:${course.thumbBg}">${course.thumb}</div>
+    <div class="course-body">
+      <div style="display:flex;gap:6px;margin-bottom:6px;"><span class="badge badge-gray">${course.category}</span><span class="badge badge-info">${course.level}</span></div>
+      <div class="course-title">${course.title}</div>
+      <div class="course-meta"><span>? ${course.rating}</span><span>?? ${course.students}</span><span>?? ${course.duration}</span></div>
+      <div class="course-instructor"><div class="instructor-av">${course.instructorInitials}</div><span style="font-size:12px;">${course.instructor}</span>${!enrolled ? `<span class="badge badge-brand" style="margin-left:auto">$${course.price}</span>` : '<span class="badge badge-success" style="margin-left:auto">? Enrolled</span>'}</div>
+    </div>
+  </div>`;
+}
+
+function openCourse(courseId) {
+  G.currentCourse = G.courses.find(c => c.id === courseId);
+  G.view = "course-detail";
+  G.courseTab = "overview";
+  render();
+}
+
+function enroll(courseId) {
+  G.enrollments[courseId] = true;
+  saveUserProgress();
+  toast("Enrolled successfully!", "success");
+  render();
+}
+
+// ============================================
+// COURSE DETAIL VIEW
+// ============================================
+function courseDetailView() {
+  const c = G.currentCourse;
+  if (!c) return "<p>Course not found.</p>";
+  const enrolled = !!G.enrollments[c.id];
+  const totalLessons = c.modules?.reduce((s, m) => s + (m.lessons?.length || 0), 0) || 0;
+  
+  return `
+  <div style="display:flex;gap:10px;margin-bottom:20px"><button class="btn btn-secondary btn-sm" onclick="G.view='catalog';render()">? Back</button></div>
+  <div style="display:grid;grid-template-columns:1fr 300px;gap:24px;">
+    <div>
+      <h1 style="font-size:24px;font-weight:700;">${c.title}</h1>
+      <p style="color:var(--text-2);margin:16px 0;">${c.description}</p>
+      <div class="tabs">
+        <button class="tab ${G.courseTab==='overview'?'active':''}" onclick="G.courseTab='overview';document.getElementById('ct').innerHTML=courseTabContent()">Overview</button>
+        <button class="tab ${G.courseTab==='curriculum'?'active':''}" onclick="G.courseTab='curriculum';document.getElementById('ct').innerHTML=courseTabContent()">Curriculum</button>
+      </div>
+      <div id="ct">${courseTabContent()}</div>
+    </div>
+    <div class="card">
+      <div style="font-size:32px;font-weight:800;">$${c.price}</div>
+      ${enrolled ? `<button class="btn btn-primary" style="width:100%;margin-top:12px;" onclick="startLesson('${c.id}',0)">Continue ?</button>` : `<button class="btn btn-primary" style="width:100%;margin-top:12px;" onclick="enroll('${c.id}')">Enroll Now</button>`}
+    </div>
+  </div>`;
+}
+
+function courseTabContent() {
+  const c = G.currentCourse;
+  if (G.courseTab === "overview") {
+    return `<div><p>${c.description}</p><p style="margin-top:12px;">Instructor: ${c.instructor}</p><p>Level: ${c.level}</p><p>Duration: ${c.duration}</p></div>`;
+  }
+  if (G.courseTab === "curriculum") {
+    return c.modules?.map((mod, mi) => `
+      <div class="card card-sm" style="margin-bottom:10px;">
+        <div style="font-weight:600;">Module ${mi+1}: ${mod.title}</div>
+        ${mod.lessons?.map((l, li) => `
+          <div style="display:flex;align-items:center;gap:8px;padding:8px 0;border-top:1px solid var(--border);cursor:pointer" onclick="startLesson('${c.id}', ${getLessonIndex(c, mi, li)})">
+            <span>${l.type === 'video' ? '??' : l.type === 'quiz' ? '??' : '??'}</span>
+            <span style="flex:1">${l.title}</span>
+            <span class="badge badge-gray">${l.duration}</span>
+          </div>`).join("")}
+      </div>`).join("");
+  }
+  return "";
+}
+
+function getLessonIndex(course, moduleIdx, lessonIdx) {
+  let index = 0;
+  for (let i = 0; i < moduleIdx; i++) {
+    index += course.modules[i].lessons.length;
+  }
+  return index + lessonIdx;
+}
+
+function startLesson(courseId, lessonIndex) {
+  G.currentCourse = G.courses.find(c => c.id === courseId);
+  const allLessons = [];
+  G.currentCourse.modules.forEach(m => {
+    m.lessons.forEach(l => allLessons.push(l));
+  });
+  G.currentLesson = { lessons: allLessons, idx: lessonIndex };
+  G.view = "lesson";
+  render();
+}
+
+// ============================================
+// LESSON VIEW (Simplified)
+// ============================================
+function lessonView() {
+  const lesson = G.currentLesson?.lessons[G.currentLesson.idx];
+  if (!lesson) return "<p>Lesson not found</p>";
+  
+  if (lesson.type === "quiz") {
+    G.view = "quiz";
+    initQuiz();
+    render();
+    return "";
+  }
+  
+  return `
+  <div style="text-align:center;padding:60px;background:var(--surface);border-radius:var(--radius-lg);">
+    <div style="font-size:48px;margin-bottom:16px;">${lesson.type === 'video' ? '??' : '??'}</div>
+    <h2>${lesson.title}</h2>
+    <p style="color:var(--text-2);margin:16px 0;">Duration: ${lesson.duration}</p>
+    <button class="btn btn-primary" onclick="completeLesson()">Mark Complete ?</button>
+  </div>`;
+}
+
+function completeLesson() {
+  const key = G.currentCourse.id + "-" + G.currentLesson.idx;
+  if (!G.completedLessons[key]) {
+    G.completedLessons[key] = true;
+    G.user.points = (G.user.points || 0) + 10;
+    saveUserProgress();
+    toast("Lesson complete! +10 points", "success");
+  }
+  
+  if (G.currentLesson.idx + 1 < G.currentLesson.lessons.length) {
+    G.currentLesson.idx++;
+    render();
+  } else {
+    toast("?? Course completed!", "success");
+    G.view = "course-detail";
+    render();
+  }
+}
+
+// ============================================
+// QUIZ (Simplified)
+// ============================================
+const QUIZ_BANK = {
+  mcq: [
+    { id: 1, text: "What does HTML stand for?", options: ["Hyper Text Markup Language", "High Tech Modern Language", "Hyper Transfer Markup Language", "Home Tool Markup Language"], correct: 0, points: 10 },
+    { id: 2, text: "Which CSS property changes text color?", options: ["text-color", "font-color", "color", "text-style"], correct: 2, points: 10 }
+  ],
+  tf: [
+    { id: 3, text: "JavaScript is the same as Java.", correct: false, points: 5 }
+  ]
+};
+
+let quizState = null;
+
+function initQuiz() {
+  const allQ = [...QUIZ_BANK.mcq, ...QUIZ_BANK.tf];
+  quizState = { questions: allQ, current: 0, answers: {}, score: 0, finished: false };
+}
+
+function quizView() {
+  if (!quizState) initQuiz();
+  if (quizState.finished) return quizResultView();
+  
+  const q = quizState.questions[quizState.current];
+  return `
+  <div class="card" style="max-width:600px;margin:0 auto;">
+    <h3>Question ${quizState.current + 1}/${quizState.questions.length}</h3>
+    <p style="margin:20px 0;font-size:18px;">${q.text}</p>
+    ${q.options ? q.options.map((opt, i) => `
+      <div class="option" onclick="selectAnswer(${i})" style="margin-bottom:8px;padding:12px;border:1px solid var(--border);border-radius:var(--radius);cursor:pointer;">
+        ${opt}
+      </div>
+    `).join("") : `
+      <div class="tf-options" style="display:flex;gap:12px;">
+        <button class="btn btn-secondary" onclick="selectAnswer(true)">? True</button>
+        <button class="btn btn-secondary" onclick="selectAnswer(false)">? False</button>
+      </div>
+    `}
+    <div style="margin-top:20px;display:flex;justify-content:space-between;">
+      <button class="btn btn-secondary" onclick="prevQuestion()" ${quizState.current === 0 ? 'disabled' : ''}>Previous</button>
+      <button class="btn btn-primary" onclick="nextQuestion()">${quizState.current === quizState.questions.length - 1 ? 'Submit' : 'Next'}</button>
+    </div>
+  </div>`;
+}
+
+function selectAnswer(answer) {
+  quizState.answers[quizState.current] = answer;
+}
+
+function nextQuestion() {
+  if (quizState.current === quizState.questions.length - 1) {
+    finishQuiz();
+  } else {
+    quizState.current++;
+    render();
+  }
+}
+
+function prevQuestion() {
+  if (quizState.current > 0) {
+    quizState.current--;
+    render();
+  }
+}
+
+function finishQuiz() {
+  let total = 0;
+  quizState.questions.forEach((q, i) => {
+    const answer = quizState.answers[i];
+    if (q.correct !== undefined) {
+      if (answer === q.correct) total += q.points;
+    }
+  });
+  quizState.score = total;
+  quizState.finished = true;
+  G.user.points = (G.user.points || 0) + total;
+  saveUserProgress();
+  render();
+}
+
+function quizResultView() {
+  return `
+  <div class="card" style="max-width:500px;margin:0 auto;text-align:center;">
+    <div style="font-size:48px;margin-bottom:16px;">${quizState.score >= 15 ? '??' : '??'}</div>
+    <h2>Your Score: ${quizState.score} points</h2>
+    <button class="btn btn-primary" style="margin-top:20px;" onclick="G.view='course-detail';render()">Back to Course</button>
+  </div>`;
+}
+
+// ============================================
+// ASSIGNMENTS, ANALYTICS, DISCUSSION, CERTIFICATES (Placeholders)
+// ============================================
+function assignmentsView() {
+  return `<div class="card"><h3>Assignments</h3><p>Your assignments will appear here.</p></div>`;
+}
+
+function analyticsView() {
+  return `<div class="card"><h3>Progress Analytics</h3><p>Total Points: ${G.user?.points || 0}</p><p>Lessons Completed: ${Object.keys(G.completedLessons).length}</p></div>`;
+}
+
+function discussionView() {
+  return `<div class="card"><h3>Discussion Forum</h3><p>Community discussions coming soon.</p></div>`;
+}
+
+function certificatesView() {
+  const earned = G.courses.filter(c => G.enrollments[c.id] && Object.keys(G.completedLessons).length > 5);
+  return `<div class="card"><h3>Certificates</h3>${earned.length ? earned.map(c => `<p>?? ${c.title} - Completed!</p>`).join("") : "<p>No certificates yet. Complete a course to earn one!</p>"}</div>`;
+}
+
+// ============================================
+// ADMIN VIEW
+// ============================================
+function adminView() {
+  const students = G.users.filter(u => u.role === "student");
+  const pending = students.filter(u => u.status === "pending");
+  
+  return `
+  <div class="stats-row">
+    <div class="stat-card"><div class="stat-num">${students.length}</div><div class="stat-label">Total Students</div></div>
+    <div class="stat-card"><div class="stat-num" style="color:var(--warn)">${pending.length}</div><div class="stat-label">Pending Approval</div></div>
+    <div class="stat-card"><div class="stat-num">${G.courses.length}</div><div class="stat-label">Courses</div></div>
+  </div>
+  <div class="tabs">
+    <button class="tab ${G.adminTab === 'users' ? 'active' : ''}" onclick="G.adminTab='users';render()">Users</button>
+    <button class="tab ${G.adminTab === 'courses' ? 'active' : ''}" onclick="G.adminTab='courses';render()">Courses</button>
+    <button class="tab ${G.adminTab === 'add-course' ? 'active' : ''}" onclick="G.adminTab='add-course';render()">+ Add Course</button>
+  </div>
+  <div id="admin-content">${adminContent()}</div>`;
+}
+
+function adminContent() {
+  if (G.adminTab === "users") {
+    const students = G.users.filter(u => u.role === "student");
+    const pending = students.filter(u => u.status === "pending");
+    return `
+      ${pending.length ? `
+      <div class="card" style="margin-bottom:20px;">
+        <h3>Pending Approvals</h3>
+        <table class="data-table">
+          <thead><tr><th>Name</th><th>Email</th><th>Action</th></tr></thead>
+          <tbody>
+            ${pending.map(u => `
+              <tr>
+                <td>${u.name}</td>
+                <td>${u.email}</td>
+                <td class="actions"><button class="btn btn-success btn-sm" onclick="approveUser('${u.id}')">Approve</button><button class="btn btn-danger btn-sm" onclick="rejectUser('${u.id}')">Reject</button></td>
+              </tr>`).join("")}
+          </tbody>
+        </table>
+      </div>` : "<div class='card' style='margin-bottom:20px;'>? No pending approvals</div>"}
+      <div class="card">
+        <h3>All Students</h3>
+        <table class="data-table">
+          <thead><tr><th>Name</th><th>Email</th><th>Status</th><th>Points</th></tr></thead>
+          <tbody>
+            ${students.map(u => `<tr><td>${u.name}</td><td>${u.email}</td><td><span class="badge ${u.status === 'approved' ? 'badge-success' : 'badge-warn'}">${u.status}</span></td><td>${u.points || 0}</td></tr>`).join("")}
+          </tbody>
+        </table>
+      </div>`;
+  }
+  
+  if (G.adminTab === "courses") {
+    return `
+      <div class="card">
+        <h3>Manage Courses</h3>
+        <table class="data-table">
+          <thead><tr><th>Course</th><th>Category</th><th>Level</th><th>Students</th><th>Actions</th></tr></thead>
+          <tbody>
+            ${G.courses.map(c => `
+              <tr>
+                <td><strong>${c.title}</strong></td>
+                <td>${c.category}</td>
+                <td>${c.level}</td>
+                <td>${c.students}</td>
+                <td class="actions"><button class="btn btn-primary btn-sm" onclick="editCourse('${c.id}')">Edit</button><button class="btn btn-danger btn-sm" onclick="deleteCourse('${c.id}')">Delete</button></td>
+              </tr>`).join("")}
+          </tbody>
+        </table>
+      </div>`;
+  }
+  
+  if (G.adminTab === "add-course") {
+    return `
+      <div class="card">
+        <h3>Add New Course</h3>
+        <form id="addCourseForm">
+          <div class="form-group"><label class="form-label">Course Title</label><input class="form-input" id="courseTitle" required></div>
+          <div class="form-group"><label class="form-label">Category</label><input class="form-input" id="courseCategory" value="Development"></div>
+          <div class="form-group"><label class="form-label">Level</label><select class="form-select" id="courseLevel"><option>Beginner</option><option>Intermediate</option><option>Advanced</option></select></div>
+          <div class="form-group"><label class="form-label">Description</label><textarea class="form-input" id="courseDescription" rows="3"></textarea></div>
+          <div class="form-group"><label class="form-label">Duration</label><input class="form-input" id="courseDuration" placeholder="e.g., 40 hours"></div>
+          <div class="form-group"><label class="form-label">Price</label><input class="form-input" id="coursePrice" type="number" value="49"></div>
+          <div class="form-group"><label class="form-label">Icon Emoji</label><input class="form-input" id="courseThumb" value="??"></div>
+          <button type="submit" class="btn btn-primary">Create Course</button>
+        </form>
+      </div>`;
+  }
+  return "";
+}
+
+function bindAdminEvents() {
+  const form = document.getElementById("addCourseForm");
+  if (form) {
+    form.onsubmit = async (e) => {
+      e.preventDefault();
+      const newCourse = {
+        title: document.getElementById("courseTitle").value,
+        category: document.getElementById("courseCategory").value,
+        level: document.getElementById("courseLevel").value,
+        description: document.getElementById("courseDescription").value,
+        duration: document.getElementById("courseDuration").value,
+        price: parseInt(document.getElementById("coursePrice").value),
+        thumb: document.getElementById("courseThumb").value,
+        thumbBg: "#eef2ff",
+        instructor: G.user.name,
+        instructorInitials: G.user.name.slice(0,2).toUpperCase(),
+        students: 0,
+        rating: 5.0,
+        modules: []
+      };
+      await addCourse(newCourse);
+      G.adminTab = "courses";
+      render();
+    };
+  }
+}
+
+function editCourse(courseId) {
+  const course = G.courses.find(c => c.id === courseId);
+  if (!course) return;
+  
+  const newTitle = prompt("Edit course title:", course.title);
+  if (newTitle && newTitle !== course.title) {
+    updateCourse(courseId, { title: newTitle });
+  }
+}
+
+// ============================================
+// INITIALIZATION
+// ============================================
+async function init() {
+  const saved = sessionStorage.getItem("lf_user");
+  if (saved) {
+    G.user = JSON.parse(saved);
+    await loadAllData();
+    if (G.user.role === "admin") G.view = "admin";
+    else G.view = "home";
+  }
+  render();
+}
+
+init();
+</script>
+</body>
+</html>
